@@ -614,10 +614,16 @@
     beginVisit(clip.id);
     if (state.level !== "basico") rememberPhrase(clip.id);
     var r = row(clip.id);
+    var transport = "<div class=\"transport\">"
+      + "<button class=\"btn\" id=\"play-resume\" aria-label=\"Reproducir\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><polygon points=\"8,5 19,12 8,19\" fill=\"currentColor\"/></svg></button>"
+      + "<button class=\"btn\" id=\"pause-both\" aria-label=\"Pausar\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"6\" y=\"5\" width=\"4\" height=\"14\" fill=\"currentColor\"/><rect x=\"14\" y=\"5\" width=\"4\" height=\"14\" fill=\"currentColor\"/></svg></button>"
+      + "</div>";
     html += "<article class=\"card\">";
     if (clip.video) {
-      html += "<div class=\"clip-window\"><video class=\"clip-video\" id=\"clip-video\" src=\"" + esc(clip.video) + "\" muted loop playsinline autoplay></video></div>";
+      html += "<div class=\"player\"><div class=\"clip-window\"><video class=\"clip-video\" id=\"clip-video\" src=\"" + esc(clip.video) + "\" muted loop playsinline autoplay></video></div>" + transport + "</div>";
       html += "<p class=\"note\">Video de la lección completa de VOA, mismo programa.</p>";
+    } else {
+      html += "<div class=\"player\">" + transport + "</div>";
     }
     html += "<p class=\"line-label\">Inglés</p>";
     html += "<p class=\"sentence\">" + esc(clip.en) + "</p>";
@@ -646,8 +652,6 @@
     html += "<div class=\"stack\" style=\"margin-top:0.7rem\">";
     html += "<div class=\"row\">";
     html += "<button class=\"btn primary\" id=\"repetir\">Repetir frase</button>";
-    html += "<button class=\"btn\" id=\"play-resume\" aria-label=\"Reproducir\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><polygon points=\"8,5 19,12 8,19\" fill=\"currentColor\"/></svg></button>";
-    html += "<button class=\"btn\" id=\"pause-both\" aria-label=\"Pausar\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"6\" y=\"5\" width=\"4\" height=\"14\" fill=\"currentColor\"/><rect x=\"14\" y=\"5\" width=\"4\" height=\"14\" fill=\"currentColor\"/></svg></button>";
     html += "</div>";
     html += "<button class=\"btn wide\" id=\"tts\">Escuchar con voz del navegador</button>";
     html += "<button class=\"btn wide\" id=\"rec\">" + (state.recording ? "Detener" : "Grabar") + "</button>";
