@@ -27,7 +27,7 @@ Sube **esta carpeta** (`app/`) como raíz del sitio. No hace falta npm.
 - Después de la prueba, el plan **Anual** ($49 al año, destacado) y el **Mensual** ($7 al mes). Modo prueba: no hay cobro ni clave de Stripe.
 - **Simular suscripción activa (sin cobro)** guarda un flag local. **Cancelar suscripción en este sitio** lo borra.
 - Puntos globales en `lingo-pop-points`: +10 la primera vez que marcas Dominada. No se restan ni se ponen en cero.
-- Debajo del video va el texto del clip en inglés, no una traducción al español. Más abajo sigue la práctica en las dos direcciones. Repetir frase, audio VOA si el mp3 está en `media/`, y voz del navegador bien identificada si no hay archivo.
+- Debajo del video van dos textos: arriba la transcripción en inglés de lo que se dice en el clip, y debajo la misma transcripción en español. Más abajo sigue la práctica en las dos direcciones. Repetir frase, audio VOA si el mp3 está en `media/`, y voz del navegador bien identificada si no hay archivo.
 
 ## Energía
 

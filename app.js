@@ -780,8 +780,10 @@
     }
     ensureOrder(clip);
     var shownEn = clip.en;
-    html += "<p class=\"line-label\">Texto del clip</p>";
+    html += "<p class=\"line-label\">Inglés</p>";
     html += "<p class=\"sentence\" id=\"en-line\">" + esc(shownEn) + "</p>";
+    html += "<p class=\"line-label\">Español</p>";
+    html += "<p class=\"translation\">" + esc(clip.es) + "</p>";
     html += "<section class=\"exercise\" id=\"order-box\">";
     html += "<h2>Ordena la frase</h2>";
     html += "<p class=\"fine\">Toca una palabra para armar la frase. Toca una de la respuesta para devolverla.</p>";
