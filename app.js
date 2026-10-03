@@ -6,11 +6,17 @@
     points: "lingo-pop-points",
     awarded: "lingo-pop-awarded",
     trial: "lingo-pop-trial-started-at",
-    sub: "lingo-pop-demo-subscription"
+    sub: "lingo-pop-demo-subscription",
+    energy: "lingo-pop-energy",
+    energyUpdated: "lingo-pop-energy-updated",
+    streak: "lingo-pop-streak",
+    openPhrase: "lingo-pop-open-phrase"
   };
   var TRIAL_MS = 7 * 24 * 60 * 60 * 1000;
+  var HOUR_MS = 60 * 60 * 1000;
+  var ENERGY_MAX = 25;
   var LEVELS = {
-    basico: { label: "Básico", blurb: "Siempre gratis. Sin prueba y sin límite." },
+    basico: { label: "Básico", blurb: "Siempre gratis. Sin energía y sin límite." },
     intermedio: { label: "Intermedio", blurb: "Frases un poco más largas." },
     avanzado: { label: "Avanzado", blurb: "Frases más largas." }
   };
@@ -22,6 +28,7 @@
     shopping: "Compras",
     food: "Comida"
   };
+  var EMPTY_MSG = "Sin energía. Recuperas aproximadamente 1 por hora. Puedes repetir esta frase, pero no pasar a otra. Básico sigue abierto.";
 
   var state = {
     clips: [],
@@ -30,13 +37,15 @@
     index: 0,
     category: "all",
     direction: "en-es",
-    showTr: false,
     checkout: false,
     status: "",
+    homeNote: "",
     recorder: null,
     chunks: [],
     takeUrl: "",
-    recording: false
+    recording: false,
+    visitClip: null,
+    visitPaid: false
   };
 
   function $(id) { return document.getElementById(id); }
@@ -116,15 +125,75 @@
     return now;
   }
 
+  function trialDaysStarted() {
+    var iso = localStorage.getItem(KEYS.trial);
+    if (!iso) return 0;
+    return remainingDays(iso, Date.now());
+  }
+
   function premiumState(startIfMissing) {
-    if (isSubscribed()) return { mode: "sub" };
+    if (isSubscribed()) return { mode: "sub", days: trialDaysStarted() };
     var existing = localStorage.getItem(KEYS.trial);
     var iso = existing;
     if (!iso && startIfMissing) iso = startTrialIfNeeded();
-    if (!iso) return { mode: "not-started" };
+    if (!iso) return { mode: "not-started", days: 0 };
     var days = remainingDays(iso, Date.now());
     if (days > 0) return { mode: "trial", days: days };
-    return { mode: "expired" };
+    return { mode: "expired", days: 0 };
+  }
+
+  function energyNow() {
+    var rawE = localStorage.getItem(KEYS.energy);
+    var rawT = localStorage.getItem(KEYS.energyUpdated);
+    var energy = rawE == null ? ENERGY_MAX : Number(rawE);
+    var last = rawT == null ? Date.now() : Number(rawT);
+    if (!Number.isFinite(energy)) energy = ENERGY_MAX;
+    if (!Number.isFinite(last)) last = Date.now();
+    energy = Math.max(0, Math.min(ENERGY_MAX, Math.floor(energy)));
+    var now = Date.now();
+    if (now > last) {
+      var hours = Math.floor((now - last) / HOUR_MS);
+      if (hours > 0) {
+        energy = Math.min(ENERGY_MAX, energy + hours);
+        last = last + hours * HOUR_MS;
+      }
+    }
+    localStorage.setItem(KEYS.energy, String(energy));
+    localStorage.setItem(KEYS.energyUpdated, String(last));
+    return energy;
+  }
+
+  function setEnergy(n) {
+    var v = Math.max(0, Math.min(ENERGY_MAX, n));
+    localStorage.setItem(KEYS.energy, String(v));
+    return v;
+  }
+
+  function usesEnergy() {
+    return !!state.level && state.level !== "basico" && !isSubscribed();
+  }
+
+  function spendEnergy(n) {
+    if (!usesEnergy()) return true;
+    var e = energyNow();
+    if (e < n) return false;
+    setEnergy(e - n);
+    return true;
+  }
+
+  function bonusEnergy(n) {
+    if (!usesEnergy()) return;
+    setEnergy(energyNow() + n);
+  }
+
+  function streak() {
+    var n = Number(localStorage.getItem(KEYS.streak));
+    if (!Number.isFinite(n) || n < 0) return 0;
+    return Math.floor(n);
+  }
+
+  function setStreak(n) {
+    localStorage.setItem(KEYS.streak, String(Math.max(0, n)));
   }
 
   function levelClips() {
@@ -145,6 +214,7 @@
 
   function renderPoints(extra) {
     var el = $("points");
+    if (!el) return;
     el.textContent = "Puntos: " + points() + (extra || "");
     if (extra) {
       el.classList.add("flash");
@@ -153,8 +223,7 @@
   }
 
   function stopAudio() {
-    var voa = $("voa");
-    voa.pause();
+    $("voa").pause();
   }
 
   function setStatus(text) {
@@ -169,16 +238,20 @@
     saveRow(id, r);
   }
 
+  function beginVisit(id) {
+    if (state.visitClip !== id) {
+      state.visitClip = id;
+      state.visitPaid = false;
+    }
+  }
+
   function playVoa(clip, restart) {
     if (!clip.audio) {
       setStatus("No hay archivo de audio de VOA en este clip. Usa «Escuchar con voz del navegador». Esa voz no es de VOA.");
       return;
     }
     var audio = $("voa");
-    var src = clip.audio;
-    if (restart || !audio.src || audio.src.indexOf(src) === -1) {
-      audio.src = src;
-    }
+    if (restart || !audio.src || audio.src.indexOf(clip.audio) === -1) audio.src = clip.audio;
     if (clip.startSeconds != null) audio.currentTime = clip.startSeconds;
     else if (restart) audio.currentTime = 0;
     audio.play().then(function () {
@@ -207,7 +280,7 @@
     else speakBrowser(clip);
   }
 
-  function toggleRecord(clip) {
+  function toggleRecord() {
     if (state.recording && state.recorder) {
       state.recorder.stop();
       return;
@@ -245,13 +318,23 @@
     });
   }
 
+  function energyBlocked() {
+    return usesEnergy() && energyNow() <= 0;
+  }
+
+  function rememberPhrase(id) {
+    if (state.level && state.level !== "basico") {
+      localStorage.setItem(KEYS.openPhrase, id);
+    }
+  }
+
   function openLevel(level) {
     state.level = level;
     state.index = 0;
     state.category = "all";
-    state.showTr = false;
     state.checkout = false;
     state.status = "";
+    state.homeNote = "";
     stopAudio();
     if (level === "basico") {
       state.screen = "practice";
@@ -259,7 +342,26 @@
       return;
     }
     var st = premiumState(true);
-    state.screen = st.mode === "expired" ? "gate" : "practice";
+    if (st.mode === "expired") {
+      state.screen = "gate";
+      render();
+      return;
+    }
+    if (!isSubscribed() && energyNow() <= 0) {
+      var openId = localStorage.getItem(KEYS.openPhrase);
+      var clips = state.clips.filter(function (c) { return c.level === level; });
+      var idx = -1;
+      for (var i = 0; i < clips.length; i++) if (clips[i].id === openId) idx = i;
+      if (idx < 0) {
+        state.screen = "home";
+        state.level = null;
+        state.homeNote = EMPTY_MSG;
+        render();
+        return;
+      }
+      state.index = idx;
+    }
+    state.screen = "practice";
     render();
   }
 
@@ -275,7 +377,7 @@
     setSubscribed(true);
     state.checkout = false;
     state.screen = "practice";
-    state.status = "Suscripción demo activa. No se cobró nada.";
+    state.status = "Suscripción demo activa. Energía ilimitada. No se cobró nada.";
     render();
   }
 
@@ -284,7 +386,7 @@
     state.status = "Suscripción demo cancelada en este sitio. Los puntos no cambian.";
     if (state.level && state.level !== "basico") {
       var st = premiumState(false);
-      state.screen = st.mode === "expired" ? "gate" : (state.screen === "home" ? "home" : "practice");
+      if (st.mode === "expired") state.screen = "gate";
     }
     render();
   }
@@ -296,38 +398,84 @@
     saveRow(clip.id, r);
     var extra = "";
     if (turningOn && awardFirst(clip.id)) extra = "  +10";
-    renderPoints(extra);
     render();
     if (extra) renderPoints(extra);
   }
 
-  function markRepeated(clip) {
+  function markCorrect(clip) {
     var r = row(clip.id);
-    r.repeated = !r.repeated;
+    if (r.repeated) {
+      r.repeated = false;
+      saveRow(clip.id, r);
+      render();
+      return;
+    }
+    if (usesEnergy() && !state.visitPaid) {
+      if (!spendEnergy(1)) {
+        state.status = EMPTY_MSG;
+        render();
+        return;
+      }
+      state.visitPaid = true;
+      var s = streak() + 1;
+      if (s % 5 === 0) {
+        bonusEnergy(2);
+        setStreak(s);
+        state.status = "La dijiste bien. Racha de " + s + ". +2 de energía.";
+      } else {
+        setStreak(s);
+        state.status = "La dijiste bien. −1 de energía.";
+      }
+    } else if (!state.visitPaid) {
+      state.visitPaid = true;
+      state.status = "Ya lo repetí.";
+    }
+    r.repeated = true;
     saveRow(clip.id, r);
     render();
   }
 
+  function markWrong() {
+    if (usesEnergy()) {
+      if (!spendEnergy(1)) {
+        state.status = EMPTY_MSG;
+        render();
+        return;
+      }
+      setStreak(0);
+      state.status = "Me equivoqué. La racha vuelve a cero. −1 de energía.";
+    } else {
+      setStreak(0);
+      state.status = "Me equivoqué. La racha vuelve a cero.";
+    }
+    render();
+  }
+
   function bannerFor(level) {
-    if (level === "basico") return "";
+    if (level === "basico") return "Siempre gratis. Sin energía.";
+    if (isSubscribed()) return "Suscripción demo activa · energía ilimitada";
     var st = premiumState(false);
-    if (st.mode === "sub") return "Suscripción demo activa · sin cobro";
     if (st.mode === "trial") return trialLabel(st.days);
     if (st.mode === "expired") return "Prueba terminada";
     return "7 días de prueba la primera vez que entres";
   }
 
   function renderHome() {
-    var html = "<h1>Elige un nivel</h1><p class=\"lead\">Una frase a la vez. Escucha, repite y marca Dominada.</p><div class=\"stack\">";
+    var html = "<h1>Elige un nivel</h1><p class=\"lead\">Una frase a la vez. Escucha, repite y marca Dominada.</p>";
+    if (state.homeNote) html += "<p class=\"warn\">" + esc(state.homeNote) + "</p>";
+    html += "<div class=\"stack\">";
     Object.keys(LEVELS).forEach(function (key) {
       var n = state.clips.filter(function (c) { return c.level === key; }).length;
-      var extra = key === "basico" ? "Siempre gratis." : esc(bannerFor(key));
       html += "<button class=\"level-btn " + key + "\" data-level=\"" + key + "\"><strong>" +
-        LEVELS[key].label + "</strong><span>" + n + " frases · " + extra + "</span></button>";
+        LEVELS[key].label + "</strong><span>" + n + " frases · " + esc(bannerFor(key)) + "</span></button>";
     });
     html += "</div>";
+    if (!isSubscribed()) {
+      var e = energyNow();
+      html += "<p class=\"energy\">Energía " + e + "/" + ENERGY_MAX + " en Intermedio y Avanzado. Básico no gasta.</p>";
+    }
     if (isSubscribed()) {
-      html += "<p class=\"fine\">La suscripción demo está activa en este navegador.</p>";
+      html += "<p class=\"fine\">La suscripción demo está activa en este navegador. Energía ilimitada.</p>";
       html += "<button class=\"btn wide\" id=\"cancel-sub\">Cancelar suscripción en este sitio</button>";
     }
     return html;
@@ -354,6 +502,27 @@
     return html;
   }
 
+  function energyBlockHtml() {
+    if (!usesEnergy()) return "";
+    var e = energyNow();
+    var pct = Math.round((e / ENERGY_MAX) * 100);
+    var html = "<p class=\"energy\">Energía " + e + "/" + ENERGY_MAX + "</p>";
+    html += "<div class=\"bar\" aria-hidden=\"true\"><span style=\"width:" + pct + "%\"></span></div>";
+    if (e <= 0) html += "<p class=\"warn\">" + esc(EMPTY_MSG) + "</p>";
+    var days = trialDaysStarted();
+    if (days > 0) html += "<p class=\"warn\">" + esc(trialLabel(days)) + "</p>";
+    html += "<p class=\"fine\">Racha correcta: " + streak() + "</p>";
+    return html;
+  }
+
+  function subEnergyHtml() {
+    if (!isSubscribed() || state.level === "basico") return "";
+    var html = "<p class=\"energy\">Energía ilimitada</p>";
+    var days = trialDaysStarted();
+    if (days > 0) html += "<p class=\"warn\">" + esc(trialLabel(days)) + "</p>";
+    return html;
+  }
+
   function renderPractice() {
     var list = levelClips();
     if (state.index >= list.length) state.index = 0;
@@ -362,11 +531,7 @@
     var pct = totalLevel ? Math.round((done / totalLevel) * 100) : 0;
     var html = "<button class=\"back\" id=\"go-home\">← Niveles</button>";
     html += "<h1>" + LEVELS[state.level].label + "</h1>";
-    var banner = state.level === "basico" ? "" : bannerFor(state.level);
-    if (banner && state.level !== "basico") {
-      var st = premiumState(false);
-      if (st.mode === "trial" || st.mode === "sub") html += "<p class=\"warn\">" + esc(banner) + "</p>";
-    }
+    html += energyBlockHtml() + subEnergyHtml();
     html += "<p class=\"lead\">" + done + " de " + totalLevel + " dominadas</p>";
     html += "<div class=\"bar\" aria-hidden=\"true\"><span style=\"width:" + pct + "%\"></span></div>";
     html += "<div class=\"row\" id=\"dirs\">";
@@ -383,14 +548,21 @@
       return html;
     }
     var clip = list[state.index];
+    beginVisit(clip.id);
+    if (state.level !== "basico") rememberPhrase(clip.id);
     var r = row(clip.id);
-    var prompt = state.direction === "en-es" ? clip.en : clip.es;
-    var hidden = state.direction === "en-es" ? clip.es : clip.en;
     html += "<article class=\"card\">";
     html += "<p class=\"fine\">" + esc(CATS[clip.category] || clip.category) + "</p>";
-    html += "<p class=\"sentence\">" + esc(prompt) + "</p>";
-    html += "<button class=\"btn\" id=\"toggle-tr\">" + (state.showTr ? "Ocultar traducción" : "Ver traducción") + "</button>";
-    if (state.showTr) html += "<p class=\"translation\">" + esc(hidden) + "</p>";
+    html += "<section class=\"pair" + (state.direction === "en-es" ? " focus" : "") + "\">";
+    html += "<h2>Inglés → Español</h2>";
+    html += "<p class=\"sentence\">" + esc(clip.en) + "</p>";
+    html += "<p class=\"translation\">" + esc(clip.es) + "</p>";
+    html += "</section>";
+    html += "<section class=\"pair" + (state.direction === "es-en" ? " focus" : "") + "\">";
+    html += "<h2>Español → Inglés</h2>";
+    html += "<p class=\"sentence\">" + esc(clip.es) + "</p>";
+    html += "<p class=\"translation\">" + esc(clip.en) + "</p>";
+    html += "</section>";
     html += "<p class=\"note\">" + esc(clip.note || "") + "</p>";
     if (clip.audio) {
       html += "<p class=\"note\">Esto reproduce el audio completo de la lección, no un recorte de 5–15 segundos.</p>";
@@ -405,7 +577,8 @@
     html += "<button class=\"btn wide\" id=\"tts\">Escuchar con voz del navegador</button>";
     html += "<button class=\"btn wide\" id=\"rec\">" + (state.recording ? "Detener" : "Grabar") + "</button>";
     html += "<button class=\"btn wide\" id=\"play-take\"" + (state.takeUrl ? "" : " disabled") + ">Escuchar mi toma</button>";
-    html += "<button class=\"btn wide" + (r.repeated ? " on" : "") + "\" id=\"repeated\">" + (r.repeated ? "Repetido" : "Ya lo repetí") + "</button>";
+    html += "<button class=\"btn wide" + (r.repeated ? " on" : "") + "\" id=\"correct\">" + (r.repeated ? "Ya lo repetí" : "La dije bien") + "</button>";
+    html += "<button class=\"btn wide\" id=\"wrong\">Me equivoqué</button>";
     html += "<button class=\"btn lime wide" + (r.dominada ? " on" : "") + "\" id=\"dominada\">" + (r.dominada ? "Dominada" : "Marcar dominada") + "</button>";
     html += "</div>";
     html += "<p class=\"status\" id=\"status\">" + esc(state.status) + "</p>";
@@ -425,14 +598,11 @@
   function render() {
     renderPoints("");
     var view = $("view");
-    var html = "";
     if (!state.clips.length) {
       view.innerHTML = "<p class=\"lead\">No se pudieron cargar las frases. Abre esta carpeta con un servidor local, no con file://.</p>";
       return;
     }
-    if (state.screen === "home") html = renderHome();
-    else if (state.screen === "gate") html = renderGate();
-    else html = renderPractice();
+    var html = state.screen === "home" ? renderHome() : (state.screen === "gate" ? renderGate() : renderPractice());
     view.innerHTML = html;
     bind();
   }
@@ -440,6 +610,20 @@
   function currentClip() {
     var list = levelClips();
     return list[state.index] || null;
+  }
+
+  function tryMove(delta) {
+    if (energyBlocked()) {
+      state.status = EMPTY_MSG;
+      render();
+      return;
+    }
+    var n = levelClips().length;
+    if (!n) return;
+    state.index = (state.index + delta + n) % n;
+    state.status = "";
+    stopAudio();
+    render();
   }
 
   function bind() {
@@ -459,21 +643,23 @@
     document.querySelectorAll("[data-dir]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         state.direction = btn.getAttribute("data-dir");
-        state.showTr = false;
         render();
       });
     });
     document.querySelectorAll("[data-cat]").forEach(function (btn) {
       btn.addEventListener("click", function () {
+        if (energyBlocked()) {
+          state.status = EMPTY_MSG;
+          render();
+          return;
+        }
         state.category = btn.getAttribute("data-cat");
         state.index = 0;
-        state.showTr = false;
+        state.status = "";
         stopAudio();
         render();
       });
     });
-    var tr = $("toggle-tr");
-    if (tr) tr.addEventListener("click", function () { state.showTr = !state.showTr; render(); });
     var clip = currentClip();
     if (!clip) return;
     var play = $("play-voa");
@@ -483,39 +669,26 @@
     var tts = $("tts");
     if (tts) tts.addEventListener("click", function () { speakBrowser(clip); });
     var rec = $("rec");
-    if (rec) rec.addEventListener("click", function () { toggleRecord(clip); });
+    if (rec) rec.addEventListener("click", toggleRecord);
     var take = $("play-take");
     if (take) take.addEventListener("click", function () {
       var a = $("take");
       if (state.takeUrl) { a.src = state.takeUrl; a.play(); }
     });
-    var repeated = $("repeated");
-    if (repeated) repeated.addEventListener("click", function () { markRepeated(clip); });
+    var correct = $("correct");
+    if (correct) correct.addEventListener("click", function () { markCorrect(clip); });
+    var wrong = $("wrong");
+    if (wrong) wrong.addEventListener("click", markWrong);
     var dom = $("dominada");
     if (dom) dom.addEventListener("click", function () { toggleDominada(clip); });
     var prev = $("prev");
-    if (prev) prev.addEventListener("click", function () {
-      var n = levelClips().length;
-      if (!n) return;
-      state.index = (state.index - 1 + n) % n;
-      state.showTr = false;
-      state.status = "";
-      stopAudio();
-      render();
-    });
+    if (prev) prev.addEventListener("click", function () { tryMove(-1); });
     var next = $("next");
-    if (next) next.addEventListener("click", function () {
-      var n = levelClips().length;
-      if (!n) return;
-      state.index = (state.index + 1) % n;
-      state.showTr = false;
-      state.status = "";
-      stopAudio();
-      render();
-    });
+    if (next) next.addEventListener("click", function () { tryMove(1); });
   }
 
   function boot() {
+    energyNow();
     fetch("clips.json")
       .then(function (res) {
         if (!res.ok) throw new Error("clips");
@@ -530,14 +703,17 @@
       });
     renderPoints("");
     setInterval(function () {
-      if (state.screen === "practice" && state.level && state.level !== "basico") {
+      energyNow();
+      if (state.screen === "practice" && state.level && state.level !== "basico" && !isSubscribed()) {
         var st = premiumState(false);
         if (st.mode === "expired") {
           state.screen = "gate";
           state.checkout = false;
           stopAudio();
           render();
+          return;
         }
+        render();
       }
     }, 30000);
   }

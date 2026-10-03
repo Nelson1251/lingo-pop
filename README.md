@@ -28,3 +28,7 @@ Sube **esta carpeta** (`app/`) como raíz del sitio. No hace falta npm.
 - **Simular suscripción activa (sin cobro)** guarda un flag local. **Cancelar suscripción en este sitio** lo borra.
 - Puntos globales en `lingo-pop-points`: +10 la primera vez que marcas Dominada. No se restan ni se ponen en cero.
 - Traducción en las dos direcciones, Repetir frase, audio VOA si el mp3 está en `media/`, y voz del navegador bien identificada si no hay archivo.
+
+## Energía
+
+Solo Intermedio y Avanzado. Máximo 25 (`lingo-pop-energy` y `lingo-pop-energy-updated`). Sube 1 por cada hora completa; los minutos sobrantes se conservan. «La dije bien» / «Ya lo repetí» al activarse gasta 1 una vez por visita. «Me equivoqué» gasta 1 y pone la racha en cero. Cada 5 aciertos seguidos suman 2, con tope 25. En 0 no se abre otra frase; Repetir frase sigue. Básico no gasta. La suscripción demo deja la energía ilimitada. Los puntos no se reinician.
