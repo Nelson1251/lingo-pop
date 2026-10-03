@@ -10,7 +10,8 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
     "note": "Audio de la lección completa Video de la lección completa de VOA, mismo programa.",
-    "video": "media/lesson-01.mp4"
+    "video": "media/lesson-01.mp4",
+    "blankWord": "meet"
   },
   {
     "id": "l02",
@@ -23,7 +24,8 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
     "note": "Audio de la lección completa Video de la lección completa de VOA, mismo programa.",
-    "video": "media/lesson-01.mp4"
+    "video": "media/lesson-01.mp4",
+    "blankWord": "Anna"
   },
   {
     "id": "l03",
@@ -36,7 +38,8 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
     "note": "Audio de la lección completa Video de la lección completa de VOA, mismo programa.",
-    "video": "media/lesson-06.mp4"
+    "video": "media/lesson-06.mp4",
+    "blankWord": "great"
   },
   {
     "id": "l04",
@@ -49,7 +52,8 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
     "note": "Audio de la lección completa Video de la lección completa de VOA, mismo programa.",
-    "video": "media/lesson-06.mp4"
+    "video": "media/lesson-06.mp4",
+    "blankWord": "gym"
   },
   {
     "id": "l05",
@@ -62,7 +66,8 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
     "note": "Audio de la lección completa Video de la lección completa de VOA, mismo programa.",
-    "video": "media/lesson-06.mp4"
+    "video": "media/lesson-06.mp4",
+    "blankWord": "lounge"
   },
   {
     "id": "l06",
@@ -75,7 +80,8 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
     "note": "Audio de la lección completa Video de la lección completa de VOA, mismo programa.",
-    "video": "media/lesson-20.mp4"
+    "video": "media/lesson-20.mp4",
+    "blankWord": "job"
   },
   {
     "id": "l07",
@@ -88,7 +94,8 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
     "note": "Audio de la lección completa Video de la lección completa de VOA, mismo programa.",
-    "video": "media/lesson-20.mp4"
+    "video": "media/lesson-20.mp4",
+    "blankWord": "chef"
   },
   {
     "id": "l08",
@@ -101,7 +108,8 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
     "note": "Audio de la lección completa Video de la lección completa de VOA, mismo programa.",
-    "video": "media/lesson-l2-02.mp4"
+    "video": "media/lesson-l2-02.mp4",
+    "blankWord": "coming"
   },
   {
     "id": "l09",
@@ -114,7 +122,8 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
     "note": "Audio de la lección completa Video de la lección completa de VOA, mismo programa.",
-    "video": "media/lesson-l2-02.mp4"
+    "video": "media/lesson-l2-02.mp4",
+    "blankWord": "skills"
   },
   {
     "id": "l10",
@@ -127,7 +136,8 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
     "note": "Audio de la lección completa Video de la lección completa de VOA, mismo programa.",
-    "video": "media/lesson-35.mp4"
+    "video": "media/lesson-35.mp4",
+    "blankWord": "shopping"
   },
   {
     "id": "l11",
@@ -140,7 +150,8 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
     "note": "Audio de la lección completa Video de la lección completa de VOA, mismo programa.",
-    "video": "media/lesson-35.mp4"
+    "video": "media/lesson-35.mp4",
+    "blankWord": "ingredients"
   },
   {
     "id": "l12",
@@ -153,7 +164,8 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
     "note": "Audio de la lección completa Video de la lección completa de VOA, mismo programa.",
-    "video": "media/lesson-23.mp4"
+    "video": "media/lesson-23.mp4",
+    "blankWord": "chicken"
   },
   {
     "id": "l13",
@@ -166,7 +178,8 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
     "note": "Audio de la lección completa Video de la lección completa de VOA, mismo programa.",
-    "video": "media/lesson-23.mp4"
+    "video": "media/lesson-23.mp4",
+    "blankWord": "shrimp"
   },
   {
     "id": "l14",
@@ -179,7 +192,8 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
     "note": "Audio de la lección completa Video de la lección completa de VOA, mismo programa.",
-    "video": "media/lesson-44.mp4"
+    "video": "media/lesson-44.mp4",
+    "blankWord": "hungry"
   },
   {
     "id": "l15",
@@ -192,7 +206,8 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
     "note": "Audio de la lección completa Video de la lección completa de VOA, mismo programa.",
-    "video": "media/lesson-36.mp4"
+    "video": "media/lesson-36.mp4",
+    "blankWord": "tastes"
   },
   {
     "id": "l16",
@@ -205,7 +220,8 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
     "note": "Audio de la lección completa Video de la lección completa de VOA, mismo programa.",
-    "video": "media/lesson-18.mp4"
+    "video": "media/lesson-18.mp4",
+    "blankWord": "News"
   },
   {
     "id": "l17",
@@ -218,7 +234,8 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
     "note": "Audio de la lección completa Video de la lección completa de VOA, mismo programa.",
-    "video": "media/lesson-04.mp4"
+    "video": "media/lesson-04.mp4",
+    "blankWord": "city"
   },
   {
     "id": "l18",
@@ -231,7 +248,8 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
     "note": "Audio de la lección completa Video de la lección completa de VOA, mismo programa.",
-    "video": "media/lesson-15.mp4"
+    "video": "media/lesson-15.mp4",
+    "blankWord": "People-watching"
   },
   {
     "id": "l19",
@@ -244,7 +262,8 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
     "note": "Audio de la lección completa Video de la lección completa de VOA, mismo programa.",
-    "video": "media/lesson-08.mp4"
+    "video": "media/lesson-08.mp4",
+    "blankWord": "recording"
   },
   {
     "id": "l20",
@@ -257,7 +276,8 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
     "note": "Audio de la lección completa Video de la lección completa de VOA, mismo programa.",
-    "video": "media/lesson-15.mp4"
+    "video": "media/lesson-15.mp4",
+    "blankWord": "weather"
   },
   {
     "id": "l21",
@@ -270,7 +290,8 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
     "note": "Audio de la lección completa Video de la lección completa de VOA, mismo programa.",
-    "video": "media/lesson-04.mp4"
+    "video": "media/lesson-04.mp4",
+    "blankWord": "apartment"
   },
   {
     "id": "l22",
@@ -283,7 +304,8 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
     "note": "Audio de la lección completa Video de la lección completa de VOA, mismo programa.",
-    "video": "media/lesson-07.mp4"
+    "video": "media/lesson-07.mp4",
+    "blankWord": "co-workers"
   },
   {
     "id": "l23",

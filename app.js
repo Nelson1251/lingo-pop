@@ -46,7 +46,11 @@
     recording: false,
     visitClip: null,
     visitPaid: false,
-    playWithVideo: false
+    playWithVideo: false,
+    blankTries: {},
+    blankSolved: {},
+    blankMsg: {},
+    order: null
   };
 
   function $(id) { return document.getElementById(id); }
@@ -333,6 +337,142 @@
     if (audio) audio.pause();
     var vid = document.getElementById("clip-video");
     if (vid) vid.pause();
+  }
+
+  function normAnswer(s) {
+    return String(s || "").trim().replace(/\s+/g, " ").toLowerCase();
+  }
+
+  function sentenceTokens(en) {
+    return String(en || "").trim().split(/\s+/).filter(function (w) { return w; });
+  }
+
+  function blankedSentence(en, word) {
+    var safe = String(word || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    var re = new RegExp("\\b" + safe + "\\b");
+    if (!re.test(en)) re = new RegExp("\\b" + safe + "\\b", "i");
+    return String(en).replace(re, "______");
+  }
+
+  function shuffleTokens(tokens) {
+    var pool = tokens.map(function (w, i) { return { w: w, k: i }; });
+    var i, j, tmp;
+    for (i = pool.length - 1; i > 0; i--) {
+      j = Math.floor(Math.random() * (i + 1));
+      tmp = pool[i];
+      pool[i] = pool[j];
+      pool[j] = tmp;
+    }
+    if (pool.length > 1 && pool.every(function (item, idx) { return item.k === idx; })) {
+      pool.push(pool.shift());
+    }
+    return pool;
+  }
+
+  function ensureOrder(clip) {
+    if (!state.order || state.order.id !== clip.id) {
+      state.order = {
+        id: clip.id,
+        pool: shuffleTokens(sentenceTokens(clip.en)),
+        built: [],
+        revealed: false,
+        msg: ""
+      };
+    }
+  }
+
+  function wordButtons(list, side) {
+    return list.map(function (item) {
+      return "<button type=\"button\" class=\"chip\" data-order=\"" + side + "\" data-key=\"" + item.k + "\">" + esc(item.w) + "</button>";
+    }).join("");
+  }
+
+  function paintOrder() {
+    var o = state.order;
+    if (!o) return;
+    var built = document.getElementById("order-built");
+    var pool = document.getElementById("order-pool");
+    var msg = document.getElementById("order-msg");
+    var answer = document.getElementById("order-answer");
+    if (built) built.innerHTML = wordButtons(o.built, "built");
+    if (pool) pool.innerHTML = wordButtons(o.pool, "pool");
+    if (msg) msg.textContent = o.msg || "";
+    if (answer) {
+      answer.hidden = !o.revealed;
+      if (o.revealed) {
+        var clip = currentClip();
+        answer.textContent = clip ? clip.en : "";
+      }
+    }
+  }
+
+  function resetOrder(clip) {
+    state.order = {
+      id: clip.id,
+      pool: shuffleTokens(sentenceTokens(clip.en)),
+      built: [],
+      revealed: state.order && state.order.id === clip.id ? state.order.revealed : false,
+      msg: ""
+    };
+    paintOrder();
+  }
+
+  function checkOrder(clip) {
+    var o = state.order;
+    if (!o || o.id !== clip.id) return;
+    var guess = o.built.map(function (item) { return item.w; }).join(" ");
+    var target = sentenceTokens(clip.en).join(" ");
+    if (o.pool.length === 0 && guess === target) o.msg = "Correcto. Ese es el orden de la frase.";
+    else o.msg = "Ese no es el orden. Inténtalo de nuevo.";
+    paintOrder();
+  }
+
+  function revealOrder(clip) {
+    ensureOrder(clip);
+    state.order.revealed = true;
+    paintOrder();
+  }
+
+  function moveOrderWord(side, key) {
+    var o = state.order;
+    if (!o) return;
+    var from = side === "pool" ? o.pool : o.built;
+    var to = side === "pool" ? o.built : o.pool;
+    var idx = -1;
+    for (var i = 0; i < from.length; i++) if (from[i].k === key) idx = i;
+    if (idx < 0) return;
+    to.push(from.splice(idx, 1)[0]);
+    o.msg = "";
+    paintOrder();
+  }
+
+  function blankDisplay(clip) {
+    var solved = state.blankSolved[clip.id];
+    var tries = state.blankTries[clip.id] || 0;
+    if (solved || tries >= 3) return clip.en;
+    return blankedSentence(clip.en, clip.blankWord);
+  }
+
+  function checkBlank(clip) {
+    var input = document.getElementById("blank-input");
+    var msg = document.getElementById("blank-msg");
+    var sentence = document.getElementById("blank-sentence");
+    if (!input || !clip.blankWord) return;
+    if (normAnswer(input.value) === normAnswer(clip.blankWord)) {
+      state.blankSolved[clip.id] = true;
+      state.blankMsg[clip.id] = "Correcto. Esa es la palabra.";
+    } else if (!state.blankSolved[clip.id]) {
+      var n = (state.blankTries[clip.id] || 0) + 1;
+      if (n > 3) n = 3;
+      state.blankTries[clip.id] = n;
+      if (n >= 3) state.blankMsg[clip.id] = "La palabra es: " + clip.blankWord;
+      else if (3 - n === 1) state.blankMsg[clip.id] = "No es esa palabra. Te queda 1 intento.";
+      else state.blankMsg[clip.id] = "No es esa palabra. Te quedan " + (3 - n) + " intentos.";
+    }
+    if (msg) msg.textContent = state.blankMsg[clip.id] || "";
+    if (sentence) sentence.textContent = blankDisplay(clip);
+    var top = document.getElementById("en-line");
+    if (top) top.textContent = blankDisplay(clip);
   }
 
   function toggleRecord() {
@@ -625,20 +765,43 @@
     } else {
       html += "<div class=\"player\">" + transport + "</div>";
     }
+    ensureOrder(clip);
+    var shownEn = blankDisplay(clip);
     html += "<p class=\"line-label\">Inglés</p>";
-    html += "<p class=\"sentence\">" + esc(clip.en) + "</p>";
+    html += "<p class=\"sentence\" id=\"en-line\">" + esc(shownEn) + "</p>";
     html += "<p class=\"line-label\">Español</p>";
     html += "<p class=\"translation\">" + esc(clip.es) + "</p>";
+    html += "<section class=\"exercise\" id=\"blank-box\">";
+    html += "<p class=\"line-label\">Completa la frase</p>";
+    html += "<p class=\"sentence\" id=\"blank-sentence\">" + esc(blankDisplay(clip)) + "</p>";
+    html += "<p class=\"translation\">" + esc(clip.es) + "</p>";
+    html += "<input class=\"blank-input\" id=\"blank-input\" type=\"text\" autocomplete=\"off\" aria-label=\"Palabra que falta\">";
+    html += "<button class=\"btn primary wide\" id=\"blank-check\" type=\"button\">Comprobar</button>";
+    html += "<p class=\"status\" id=\"blank-msg\">" + esc(state.blankMsg[clip.id] || "") + "</p>";
+    html += "</section>";
+    html += "<section class=\"exercise\" id=\"order-box\">";
+    html += "<h2>Ordena la frase</h2>";
+    html += "<p class=\"fine\">Toca una palabra para armar la frase. Toca una de la respuesta para devolverla.</p>";
+    html += "<div class=\"word-row\" id=\"order-built\">" + wordButtons(state.order.built, "built") + "</div>";
+    html += "<div class=\"word-row\" id=\"order-pool\">" + wordButtons(state.order.pool, "pool") + "</div>";
+    html += "<div class=\"row\">";
+    html += "<button class=\"btn\" id=\"order-check\" type=\"button\">Comprobar</button>";
+    html += "<button class=\"btn\" id=\"order-reset\" type=\"button\">Reiniciar</button>";
+    html += "<button class=\"btn\" id=\"order-reveal\" type=\"button\">Ver la frase</button>";
+    html += "</div>";
+    html += "<p class=\"status\" id=\"order-msg\">" + esc(state.order.msg || "") + "</p>";
+    html += "<p class=\"sentence\" id=\"order-answer\"" + (state.order.revealed ? "" : " hidden") + ">" + (state.order.revealed ? esc(clip.en) : "") + "</p>";
+    html += "</section>";
     html += "<p class=\"fine\">" + esc(CATS[clip.category] || clip.category) + "</p>";
     html += "<section class=\"pair" + (state.direction === "en-es" ? " focus" : "") + "\">";
     html += "<h2>Inglés → Español</h2>";
-    html += "<p class=\"sentence\">" + esc(clip.en) + "</p>";
+    html += "<p class=\"sentence\">" + esc(shownEn) + "</p>";
     html += "<p class=\"translation\">" + esc(clip.es) + "</p>";
     html += "</section>";
     html += "<section class=\"pair" + (state.direction === "es-en" ? " focus" : "") + "\">";
     html += "<h2>Español → Inglés</h2>";
     html += "<p class=\"sentence\">" + esc(clip.es) + "</p>";
-    html += "<p class=\"translation\">" + esc(clip.en) + "</p>";
+    html += "<p class=\"translation\">" + esc(shownEn) + "</p>";
     html += "</section>";
     html += "<p class=\"note\">" + esc(clip.note || "") + "</p>";
     if (clip.audio) {
@@ -753,6 +916,24 @@
     if (playResumeBtn) playResumeBtn.addEventListener("click", function () { resumeMedia(clip); });
     var pauseBtn = $("pause-both");
     if (pauseBtn) pauseBtn.addEventListener("click", pauseMedia);
+    var blankCheck = $("blank-check");
+    if (blankCheck) blankCheck.addEventListener("click", function () { checkBlank(clip); });
+    var blankInput = $("blank-input");
+    if (blankInput) blankInput.addEventListener("keydown", function (ev) {
+      if (ev.key === "Enter") checkBlank(clip);
+    });
+    var orderBox = $("order-box");
+    if (orderBox) orderBox.addEventListener("click", function (ev) {
+      var btn = ev.target.closest("[data-order]");
+      if (!btn) return;
+      moveOrderWord(btn.getAttribute("data-order"), Number(btn.getAttribute("data-key")));
+    });
+    var orderCheck = $("order-check");
+    if (orderCheck) orderCheck.addEventListener("click", function () { checkOrder(clip); });
+    var orderReset = $("order-reset");
+    if (orderReset) orderReset.addEventListener("click", function () { resetOrder(clip); });
+    var orderReveal = $("order-reveal");
+    if (orderReveal) orderReveal.addEventListener("click", function () { revealOrder(clip); });
     var tts = $("tts");
     if (tts) tts.addEventListener("click", function () { speakBrowser(clip); });
     var rec = $("rec");
