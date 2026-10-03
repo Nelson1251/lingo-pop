@@ -774,7 +774,7 @@
     html += "<article class=\"card\">";
     if (clip.video) {
       html += "<div class=\"player\"><div class=\"clip-window\"><video class=\"clip-video\" id=\"clip-video\" src=\"" + esc(clip.video) + "\" loop playsinline></video></div>" + scrub + transport + "</div>";
-      html += "<p class=\"note\">Video de la lección completa de VOA, mismo programa.</p>";
+      html += "<p class=\"note\">" + (clip.shortCut ? "Corte corto del diálogo. No es la lección completa." : "Video de la lección completa de VOA, mismo programa.") + "</p>";
     } else {
       html += "<div class=\"player\">" + transport + "</div>";
     }
