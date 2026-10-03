@@ -483,7 +483,7 @@
     if (msg) msg.textContent = state.blankMsg[clip.id] || "";
     if (sentence) sentence.textContent = blankDisplay(clip);
     var top = document.getElementById("en-line");
-    if (top) top.textContent = blankDisplay(clip);
+    if (top && !clip.spokenEn) top.textContent = blankDisplay(clip);
   }
 
   function toggleRecord() {
@@ -779,11 +779,13 @@
       html += "<div class=\"player\">" + transport + "</div>";
     }
     ensureOrder(clip);
-    var shownEn = clip.en;
+    var shownEn = clip.spokenEn || clip.en;
+    var shownEs = clip.spokenEs || clip.es;
+    var captionClass = clip.spokenEn ? "sentence spoken" : "sentence";
     html += "<p class=\"line-label\">Inglés</p>";
-    html += "<p class=\"sentence\" id=\"en-line\">" + esc(shownEn) + "</p>";
+    html += "<p class=\"" + captionClass + "\" id=\"en-line\">" + esc(shownEn) + "</p>";
     html += "<p class=\"line-label\">Español</p>";
-    html += "<p class=\"translation\">" + esc(clip.es) + "</p>";
+    html += "<p class=\"" + (clip.spokenEs ? "translation spoken" : "translation") + "\">" + esc(shownEs) + "</p>";
     html += "<section class=\"exercise\" id=\"order-box\">";
     html += "<h2>Ordena la frase</h2>";
     html += "<p class=\"fine\">Toca una palabra para armar la frase. Toca una de la respuesta para devolverla.</p>";
