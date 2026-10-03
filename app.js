@@ -237,17 +237,30 @@
     if (state.screen !== "practice") return;
     var clip = currentClip();
     if (!clip) return;
-    if (clip.audio) playVoa(clip, true);
-    else if (clip.video) playClipVideo();
+    if (document.getElementById("clip-video")) playClipVideo({ restart: true });
+    else if (clip.audio) playVoa(clip, true);
   }
 
-  function playClipVideo() {
+  function playClipVideo(opts) {
+    opts = opts || {};
     var vid = document.getElementById("clip-video");
-    if (!vid) return;
-    vid.muted = true;
+    if (!vid) return false;
+    stopAudio();
+    vid.muted = false;
+    vid.volume = 1;
     vid.loop = true;
+    if (opts.restart) vid.currentTime = 0;
     var pending = vid.play();
-    if (pending && pending.catch) pending.catch(function () {});
+    if (pending && pending.then) {
+      pending.then(function () {
+        var clip = currentClip();
+        if (clip) markHeard(clip.id);
+        setStatus("Video de la lección completa con audio.");
+      }).catch(function () {
+        setStatus("Toca el botón de reproducir para oír el video.");
+      });
+    }
+    return true;
   }
 
   function setStatus(text) {
@@ -270,6 +283,10 @@
   }
 
   function playVoa(clip, restart) {
+    if (document.getElementById("clip-video")) {
+      playClipVideo({ restart: !!restart });
+      return;
+    }
     if (!clip.audio) {
       setStatus("No hay archivo de audio de VOA en este clip. Usa «Escuchar con voz del navegador». Esa voz no es de VOA.");
       return;
@@ -278,9 +295,6 @@
     if (restart || !audio.src || audio.src.indexOf(clip.audio) === -1) audio.src = clip.audio;
     if (clip.startSeconds != null) audio.currentTime = clip.startSeconds;
     else if (restart) audio.currentTime = 0;
-    var vidRestart = document.getElementById("clip-video");
-    if (restart && vidRestart) vidRestart.currentTime = 0;
-    playClipVideo();
     audio.play().then(function () {
       markHeard(clip.id);
       setStatus("Audio de la lección completa. No es un recorte de 5–15 segundos.");
@@ -303,25 +317,23 @@
   }
 
   function repetir(clip) {
+    if (document.getElementById("clip-video")) {
+      playClipVideo({ restart: true });
+      return;
+    }
     if (clip.audio) playVoa(clip, true);
     else speakBrowser(clip);
   }
 
   function resumeMedia(clip) {
-    var audio = $("voa");
-    var vid = document.getElementById("clip-video");
-    function resumeVideo() {
-      if (!vid) return;
-      var pending = vid.play();
-      if (pending && pending.catch) pending.catch(function () {});
-    }
-    if (!clip.audio) {
-      resumeVideo();
+    if (document.getElementById("clip-video")) {
+      playClipVideo({ restart: false });
       return;
     }
+    var audio = $("voa");
+    if (!clip.audio) return;
     var same = !!(audio.src && audio.src.indexOf(clip.audio) !== -1);
     if (same && audio.currentTime > 0.05) {
-      resumeVideo();
       audio.play().then(function () {
         markHeard(clip.id);
       }).catch(function () {
@@ -760,7 +772,7 @@
       + "</div>";
     html += "<article class=\"card\">";
     if (clip.video) {
-      html += "<div class=\"player\"><div class=\"clip-window\"><video class=\"clip-video\" id=\"clip-video\" src=\"" + esc(clip.video) + "\" muted loop playsinline autoplay></video></div>" + transport + "</div>";
+      html += "<div class=\"player\"><div class=\"clip-window\"><video class=\"clip-video\" id=\"clip-video\" src=\"" + esc(clip.video) + "\" loop playsinline></video></div>" + transport + "</div>";
       html += "<p class=\"note\">Video de la lección completa de VOA, mismo programa.</p>";
     } else {
       html += "<div class=\"player\">" + transport + "</div>";
