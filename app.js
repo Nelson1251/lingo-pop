@@ -226,6 +226,15 @@
     $("voa").pause();
   }
 
+  function playClipVideo() {
+    var vid = document.getElementById("clip-video");
+    if (!vid) return;
+    vid.muted = true;
+    vid.loop = true;
+    var pending = vid.play();
+    if (pending && pending.catch) pending.catch(function () {});
+  }
+
   function setStatus(text) {
     state.status = text || "";
     var el = document.getElementById("status");
@@ -254,6 +263,7 @@
     if (restart || !audio.src || audio.src.indexOf(clip.audio) === -1) audio.src = clip.audio;
     if (clip.startSeconds != null) audio.currentTime = clip.startSeconds;
     else if (restart) audio.currentTime = 0;
+    playClipVideo();
     audio.play().then(function () {
       markHeard(clip.id);
       setStatus("Audio de la lección completa. No es un recorte de 5–15 segundos.");
@@ -552,6 +562,14 @@
     if (state.level !== "basico") rememberPhrase(clip.id);
     var r = row(clip.id);
     html += "<article class=\"card\">";
+    if (clip.video) {
+      html += "<div class=\"clip-window\"><video class=\"clip-video\" id=\"clip-video\" src=\"" + esc(clip.video) + "\" muted loop playsinline autoplay></video></div>";
+      html += "<p class=\"note\">Video mudo de fondo. Licencia Mixkit. No es la persona que dice la frase.</p>";
+    }
+    html += "<p class=\"line-label\">Inglés</p>";
+    html += "<p class=\"sentence\">" + esc(clip.en) + "</p>";
+    html += "<p class=\"line-label\">Español</p>";
+    html += "<p class=\"translation\">" + esc(clip.es) + "</p>";
     html += "<p class=\"fine\">" + esc(CATS[clip.category] || clip.category) + "</p>";
     html += "<section class=\"pair" + (state.direction === "en-es" ? " focus" : "") + "\">";
     html += "<h2>Inglés → Español</h2>";

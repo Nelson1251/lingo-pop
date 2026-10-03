@@ -9,7 +9,8 @@
     "audio": "media/lesson-01.mp3",
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
-    "note": "Audio de la lección completa"
+    "note": "Audio de la lección completa",
+    "video": "media/cafe-friends.mp4"
   },
   {
     "id": "l02",
@@ -21,7 +22,8 @@
     "audio": "media/lesson-01.mp3",
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
-    "note": "Audio de la lección completa"
+    "note": "Audio de la lección completa",
+    "video": "media/cafe-friends.mp4"
   },
   {
     "id": "l03",
@@ -33,7 +35,8 @@
     "audio": "media/lesson-06.mp3",
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
-    "note": "Audio de la lección completa"
+    "note": "Audio de la lección completa",
+    "video": "media/cafe-friends.mp4"
   },
   {
     "id": "l04",
@@ -81,7 +84,8 @@
     "audio": "media/lesson-20.mp3",
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
-    "note": "Audio de la lección completa"
+    "note": "Audio de la lección completa",
+    "video": "media/cafeteria.mp4"
   },
   {
     "id": "l08",
@@ -117,7 +121,8 @@
     "audio": "media/lesson-35.mp3",
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
-    "note": "Audio de la lección completa"
+    "note": "Audio de la lección completa",
+    "video": "media/cafeteria.mp4"
   },
   {
     "id": "l11",
@@ -129,7 +134,8 @@
     "audio": "media/lesson-35.mp3",
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
-    "note": "Audio de la lección completa"
+    "note": "Audio de la lección completa",
+    "video": "media/cafeteria.mp4"
   },
   {
     "id": "l12",
@@ -141,7 +147,8 @@
     "audio": "media/lesson-23.mp3",
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
-    "note": "Audio de la lección completa"
+    "note": "Audio de la lección completa",
+    "video": "media/cafeteria.mp4"
   },
   {
     "id": "l13",
@@ -153,7 +160,8 @@
     "audio": "media/lesson-23.mp3",
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
-    "note": "Audio de la lección completa"
+    "note": "Audio de la lección completa",
+    "video": "media/cafeteria.mp4"
   },
   {
     "id": "l14",
@@ -165,7 +173,8 @@
     "audio": "media/lesson-44.mp3",
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
-    "note": "Audio de la lección completa"
+    "note": "Audio de la lección completa",
+    "video": "media/cafeteria.mp4"
   },
   {
     "id": "l15",
@@ -177,7 +186,8 @@
     "audio": "media/lesson-36.mp3",
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
-    "note": "Audio de la lección completa"
+    "note": "Audio de la lección completa",
+    "video": "media/cafeteria.mp4"
   },
   {
     "id": "l16",
@@ -187,6 +197,78 @@
     "level": "basico",
     "lessonPage": "https://learningenglish.voanews.com/a/lets-learn-english-lesson-18-she-always-does-that/3357748.html",
     "audio": "media/lesson-18.mp3",
+    "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
+    "startSeconds": null,
+    "note": "Audio de la lección completa"
+  },
+  {
+    "id": "l17",
+    "en": "You know, Pete, I am new to D.C. The city is big.",
+    "es": "Sabes, Pete, soy nueva en Washington, D.C. La ciudad es grande.",
+    "category": "travel",
+    "level": "intermedio",
+    "lessonPage": "https://learningenglish.voanews.com/a/lets-learn-english-lesson-4/3168920.html",
+    "audio": "media/lesson-04.mp3",
+    "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
+    "startSeconds": null,
+    "note": "Audio de la lección completa"
+  },
+  {
+    "id": "l18",
+    "en": "People-watching in D.C. is fun. It makes me forget the time!",
+    "es": "Observar a la gente en Washington, D.C. es divertido. ¡Me hace olvidar la hora!",
+    "category": "travel",
+    "level": "intermedio",
+    "lessonPage": "https://learningenglish.voanews.com/a/lets-learn-english-lesson-15-i-love-people-watching/3343720.html",
+    "audio": "media/lesson-15.mp3",
+    "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
+    "startSeconds": null,
+    "note": "Audio de la lección completa"
+  },
+  {
+    "id": "l19",
+    "en": "Yes, I’m busy. When the studio light is on, I am recording my evening show.",
+    "es": "Sí, estoy ocupado. Cuando la luz del estudio está encendida, estoy grabando mi programa de la noche.",
+    "category": "work",
+    "level": "avanzado",
+    "lessonPage": "https://learningenglish.voanews.com/a/lets-learn-english-lesson-8-are-you-busy/3253185.html",
+    "audio": "media/lesson-08.mp3",
+    "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
+    "startSeconds": null,
+    "note": "Audio de la lección completa"
+  },
+  {
+    "id": "l20",
+    "en": "We need to return to work. But the weather is beautiful and people-watching is fun!",
+    "es": "Tenemos que volver al trabajo. Pero el clima está hermoso y observar a la gente es divertido.",
+    "category": "work",
+    "level": "avanzado",
+    "lessonPage": "https://learningenglish.voanews.com/a/lets-learn-english-lesson-15-i-love-people-watching/3343720.html",
+    "audio": "media/lesson-15.mp3",
+    "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
+    "startSeconds": null,
+    "note": "Audio de la lección completa"
+  },
+  {
+    "id": "l21",
+    "en": "Yeah. But you learn a little more every day. How's the new apartment?",
+    "es": "Sí. Pero aprendes un poco más cada día. ¿Cómo está el apartamento nuevo?",
+    "category": "travel",
+    "level": "avanzado",
+    "lessonPage": "https://learningenglish.voanews.com/a/lets-learn-english-lesson-4/3168920.html",
+    "audio": "media/lesson-04.mp3",
+    "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
+    "startSeconds": null,
+    "note": "Audio de la lección completa"
+  },
+  {
+    "id": "l22",
+    "en": "So sorry, but I am busy. Please meet your co-workers. But remember, they are busy working.",
+    "es": "Lo siento mucho, pero estoy ocupada. Por favor, conoce a tus compañeros de trabajo. Pero recuerda que están ocupados trabajando.",
+    "category": "work",
+    "level": "avanzado",
+    "lessonPage": "https://learningenglish.voanews.com/a/lets-learn-english-lesson-7-what-are-you-doing/3240468.html",
+    "audio": "media/lesson-07.mp3",
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
     "note": "Audio de la lección completa"
