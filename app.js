@@ -17,7 +17,7 @@
   var ENERGY_MAX = 25;
   var LEVELS = {
     basico: { label: "Principiante", blurb: "Siempre gratis. Sin energía y sin límite." },
-    intermedio: { label: "Completo", blurb: "Frases un poco más largas." }
+    intermedio: { label: "Full access", blurb: "Frases un poco más largas." }
   };
   var CATS = {
     all: "Todas",
@@ -681,7 +681,7 @@
     html += "</div>";
     if (!isSubscribed()) {
       var e = energyNow();
-      html += "<p class=\"energy\">Energía " + e + "/" + ENERGY_MAX + " en Completo. Principiante no gasta.</p>";
+      html += "<p class=\"energy\">Energía " + e + "/" + ENERGY_MAX + " en Full access. Principiante no gasta.</p>";
     }
     if (isSubscribed()) {
       html += "<p class=\"fine\">La suscripción demo está activa en este navegador. Energía ilimitada.</p>";
