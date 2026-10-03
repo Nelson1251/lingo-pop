@@ -45,7 +45,8 @@
     takeUrl: "",
     recording: false,
     visitClip: null,
-    visitPaid: false
+    visitPaid: false,
+    playWithVideo: false
   };
 
   function $(id) { return document.getElementById(id); }
@@ -226,6 +227,16 @@
     $("voa").pause();
   }
 
+  function startWithVideoIfNeeded() {
+    if (!state.playWithVideo) return;
+    state.playWithVideo = false;
+    if (state.screen !== "practice") return;
+    var clip = currentClip();
+    if (!clip) return;
+    if (clip.audio) playVoa(clip, true);
+    else if (clip.video) playClipVideo();
+  }
+
   function playClipVideo() {
     var vid = document.getElementById("clip-video");
     if (!vid) return;
@@ -348,6 +359,7 @@
     stopAudio();
     if (level === "basico") {
       state.screen = "practice";
+      state.playWithVideo = true;
       render();
       return;
     }
@@ -372,6 +384,7 @@
       state.index = idx;
     }
     state.screen = "practice";
+    state.playWithVideo = true;
     render();
   }
 
@@ -387,6 +400,7 @@
     setSubscribed(true);
     state.checkout = false;
     state.screen = "practice";
+    state.playWithVideo = true;
     state.status = "Suscripción demo activa. Energía ilimitada. No se cobró nada.";
     render();
   }
@@ -564,7 +578,7 @@
     html += "<article class=\"card\">";
     if (clip.video) {
       html += "<div class=\"clip-window\"><video class=\"clip-video\" id=\"clip-video\" src=\"" + esc(clip.video) + "\" muted loop playsinline autoplay></video></div>";
-      html += "<p class=\"note\">Video mudo de fondo. Licencia Mixkit. No es la persona que dice la frase.</p>";
+      html += "<p class=\"note\">La imagen es muda. El audio que suena es de VOA, no de las personas del video. Licencia Mixkit.</p>";
     }
     html += "<p class=\"line-label\">Inglés</p>";
     html += "<p class=\"sentence\">" + esc(clip.en) + "</p>";
@@ -623,6 +637,7 @@
     var html = state.screen === "home" ? renderHome() : (state.screen === "gate" ? renderGate() : renderPractice());
     view.innerHTML = html;
     bind();
+    startWithVideoIfNeeded();
   }
 
   function currentClip() {
@@ -641,6 +656,7 @@
     state.index = (state.index + delta + n) % n;
     state.status = "";
     stopAudio();
+    state.playWithVideo = true;
     render();
   }
 
@@ -682,6 +698,8 @@
     if (!clip) return;
     var play = $("play-voa");
     if (play && clip.audio) play.addEventListener("click", function () { playVoa(clip, true); });
+    var vidEl = document.getElementById("clip-video");
+    if (vidEl) vidEl.addEventListener("click", function () { repetir(clip); });
     var rep = $("repetir");
     if (rep) rep.addEventListener("click", function () { repetir(clip); });
     var tts = $("tts");
