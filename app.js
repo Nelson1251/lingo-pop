@@ -770,27 +770,20 @@
       + "<button class=\"btn\" id=\"play-resume\" aria-label=\"Reproducir\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><polygon points=\"8,5 19,12 8,19\" fill=\"currentColor\"/></svg></button>"
       + "<button class=\"btn\" id=\"pause-both\" aria-label=\"Pausar\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"6\" y=\"5\" width=\"4\" height=\"14\" fill=\"currentColor\"/><rect x=\"14\" y=\"5\" width=\"4\" height=\"14\" fill=\"currentColor\"/></svg></button>"
       + "</div>";
+    var scrub = "<div class=\"scrub\" id=\"scrub\" role=\"slider\" tabindex=\"0\" aria-label=\"Avance del video\" aria-valuemin=\"0\" aria-valuemax=\"100\" aria-valuenow=\"0\"><span id=\"scrub-fill\"></span></div>";
     html += "<article class=\"card\">";
     if (clip.video) {
-      html += "<div class=\"player\"><div class=\"clip-window\"><video class=\"clip-video\" id=\"clip-video\" src=\"" + esc(clip.video) + "\" loop playsinline></video></div>" + transport + "</div>";
+      html += "<div class=\"player\"><div class=\"clip-window\"><video class=\"clip-video\" id=\"clip-video\" src=\"" + esc(clip.video) + "\" loop playsinline></video></div>" + scrub + transport + "</div>";
       html += "<p class=\"note\">Video de la lección completa de VOA, mismo programa.</p>";
     } else {
       html += "<div class=\"player\">" + transport + "</div>";
     }
     ensureOrder(clip);
-    var shownEn = blankDisplay(clip);
+    var shownEn = clip.en;
     html += "<p class=\"line-label\">Inglés</p>";
     html += "<p class=\"sentence\" id=\"en-line\">" + esc(shownEn) + "</p>";
     html += "<p class=\"line-label\">Español</p>";
     html += "<p class=\"translation\">" + esc(clip.es) + "</p>";
-    html += "<section class=\"exercise\" id=\"blank-box\">";
-    html += "<p class=\"line-label\">Completa la frase</p>";
-    html += "<p class=\"sentence\" id=\"blank-sentence\">" + esc(blankDisplay(clip)) + "</p>";
-    html += "<p class=\"translation\">" + esc(clip.es) + "</p>";
-    html += "<input class=\"blank-input\" id=\"blank-input\" type=\"text\" autocomplete=\"off\" aria-label=\"Palabra que falta\">";
-    html += "<button class=\"btn primary wide\" id=\"blank-check\" type=\"button\">Comprobar</button>";
-    html += "<p class=\"status\" id=\"blank-msg\">" + esc(state.blankMsg[clip.id] || "") + "</p>";
-    html += "</section>";
     html += "<section class=\"exercise\" id=\"order-box\">";
     html += "<h2>Ordena la frase</h2>";
     html += "<p class=\"fine\">Toca una palabra para armar la frase. Toca una de la respuesta para devolverla.</p>";
@@ -922,6 +915,31 @@
     if (play && clip.audio) play.addEventListener("click", function () { playVoa(clip, true); });
     var vidEl = document.getElementById("clip-video");
     if (vidEl) vidEl.addEventListener("click", function () { repetir(clip); });
+    var scrubEl = $("scrub");
+    var scrubFill = $("scrub-fill");
+    if (vidEl && scrubEl && scrubFill) {
+      var paintScrub = function () {
+        var dur = vidEl.duration;
+        if (!dur || !isFinite(dur)) return;
+        var pct = Math.max(0, Math.min(100, (vidEl.currentTime / dur) * 100));
+        scrubFill.style.width = pct + "%";
+        scrubEl.setAttribute("aria-valuenow", String(Math.round(pct)));
+      };
+      var seekScrub = function (clientX) {
+        var dur = vidEl.duration;
+        if (!dur || !isFinite(dur)) return;
+        var rect = scrubEl.getBoundingClientRect();
+        if (!rect.width) return;
+        var ratio = (clientX - rect.left) / rect.width;
+        ratio = Math.max(0, Math.min(1, ratio));
+        vidEl.currentTime = ratio * dur;
+        paintScrub();
+      };
+      vidEl.addEventListener("timeupdate", paintScrub);
+      vidEl.addEventListener("loadedmetadata", paintScrub);
+      vidEl.addEventListener("seeked", paintScrub);
+      scrubEl.addEventListener("click", function (ev) { seekScrub(ev.clientX); });
+    }
     var rep = $("repetir");
     if (rep) rep.addEventListener("click", function () { repetir(clip); });
     var playResumeBtn = $("play-resume");
