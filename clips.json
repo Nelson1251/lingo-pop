@@ -1555,12 +1555,11 @@
     "level": "intermedio",
     "lessonPage": "https://learningenglish.voanews.com/a/lets-learn-english-lesson-3-i-am-here/3126527.html",
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
-    "startSeconds": 25,
-    "note": "Corte del diálogo inicial, de 0:25 a 1:21. No es la lección completa.",
+    "note": "Corte de la frase, 2.7 segundos. Solo I am in my new apartment.",
     "video": "media/lesson-03.mp4",
     "blankWord": "apartment",
-    "spokenEn": "I am in my new apartment.\nGreat!\nI live with Marsha. We're roommates.\nI want to cook dinner.\nOh!\nIs there a supermarket near here?\nMarsha knows.\nMarsha's work number is 555-8986.\nHello?\nHello. Is this Marsha? It is Anna.\nI'm sorry. You have the wrong number.\nIs this 555-8986?\nNo, this is 555-8689.\nOh, excuse me.\nOK, bye.",
-    "spokenEs": "Estoy en mi nuevo apartamento.\n¡Genial!\nVivo con Marsha. Somos compañeras de cuarto.\nQuiero cocinar la cena.\n¡Oh!\n¿Hay un supermercado cerca de aquí?\nMarsha lo sabe.\nEl número del trabajo de Marsha es 555-8986.\n¿Hola?\nHola. ¿Es Marsha? Soy Anna.\nLo siento. Tiene el número equivocado.\n¿Es este el 555-8986?\nNo, este es el 555-8689.\nOh, disculpe.\nEstá bien, adiós.",
+    "spokenEn": "I am in my new apartment.",
+    "spokenEs": "Estoy en mi nuevo apartamento.",
     "shortCut": true
   }
 ]
