@@ -16,7 +16,7 @@
   var HOUR_MS = 60 * 60 * 1000;
   var ENERGY_MAX = 25;
   var LEVELS = {
-    basico: { label: "Básico", blurb: "Siempre gratis. Sin energía y sin límite." },
+    basico: { label: "Principiante", blurb: "Siempre gratis. Sin energía y sin límite." },
     intermedio: { label: "Intermedio", blurb: "Frases un poco más largas." },
     avanzado: { label: "Avanzado", blurb: "Frases más largas." }
   };
@@ -28,7 +28,7 @@
     shopping: "Compras",
     food: "Comida"
   };
-  var EMPTY_MSG = "Sin energía. Recuperas aproximadamente 1 por hora. Puedes repetir esta frase, pero no pasar a otra. Básico sigue abierto.";
+  var EMPTY_MSG = "Sin energía. Recuperas aproximadamente 1 por hora. Puedes repetir esta frase, pero no pasar a otra. Principiante sigue abierto.";
 
   var state = {
     clips: [],
@@ -682,7 +682,7 @@
     html += "</div>";
     if (!isSubscribed()) {
       var e = energyNow();
-      html += "<p class=\"energy\">Energía " + e + "/" + ENERGY_MAX + " en Intermedio y Avanzado. Básico no gasta.</p>";
+      html += "<p class=\"energy\">Energía " + e + "/" + ENERGY_MAX + " en Intermedio y Avanzado. Principiante no gasta.</p>";
     }
     if (isSubscribed()) {
       html += "<p class=\"fine\">La suscripción demo está activa en este navegador. Energía ilimitada.</p>";
@@ -695,13 +695,13 @@
     var label = LEVELS[state.level].label;
     var html = "<button class=\"back\" id=\"go-home\">← Niveles</button>";
     html += "<h1>" + esc(label) + "</h1>";
-    html += "<p class=\"lead\">La prueba gratis de 7 días terminó. Elige un plan para seguir en este nivel. Básico sigue gratis.</p>";
+    html += "<p class=\"lead\">La prueba gratis de 7 días terminó. Elige un plan para seguir en este nivel. Principiante sigue gratis.</p>";
     html += "<div class=\"plan\"><b>Mensual</b><p class=\"fine\">Precio en Stripe</p></div>";
     html += "<div class=\"stack\">";
     html += "<button class=\"btn primary wide\" id=\"pay\">Continuar al pago</button>";
     html += "<button class=\"btn lime wide\" id=\"sim\">Simular suscripción activa (sin cobro)</button>";
     html += "<button class=\"btn wide\" id=\"cancel-sub\">Cancelar suscripción en este sitio</button>";
-    html += "<button class=\"btn wide\" id=\"to-basico\">Volver a Básico</button>";
+    html += "<button class=\"btn wide\" id=\"to-basico\">Volver a Principiante</button>";
     html += "</div>";
     html += "<p class=\"fine\">Si la app sale en iPhone, el pago será por la App Store. En Android, por Google Play. Esta versión web no usa esas tiendas.</p>";
     if (state.checkout) {
