@@ -24,7 +24,7 @@ Sube **esta carpeta** (`app/`) como raíz del sitio. No hace falta npm.
 
 - Niveles: Principiante (siempre gratis) y Completo.
 - Completo: 7×24 h de prueba desde la primera vez que entras (`lingo-pop-trial-started-at`). Los días se calculan con esa fecha.
-- Después de la prueba, un plan **Mensual** en modo prueba. No hay precio inventado ni cobro. No hay clave de Stripe.
+- Después de la prueba, el plan **Anual** ($49 al año, destacado) y el **Mensual** ($7 al mes). Modo prueba: no hay cobro ni clave de Stripe.
 - **Simular suscripción activa (sin cobro)** guarda un flag local. **Cancelar suscripción en este sitio** lo borra.
 - Puntos globales en `lingo-pop-points`: +10 la primera vez que marcas Dominada. No se restan ni se ponen en cero.
 - Traducción en las dos direcciones, Repetir frase, audio VOA si el mp3 está en `media/`, y voz del navegador bien identificada si no hay archivo.

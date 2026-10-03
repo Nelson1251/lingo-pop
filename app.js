@@ -695,7 +695,8 @@
     var html = "<button class=\"back\" id=\"go-home\">← Niveles</button>";
     html += "<h1>" + esc(label) + "</h1>";
     html += "<p class=\"lead\">La prueba gratis de 7 días terminó. Elige un plan para seguir en este nivel. Principiante sigue gratis.</p>";
-    html += "<div class=\"plan\"><b>Mensual</b><p class=\"fine\">Precio en Stripe</p></div>";
+    html += "<div class=\"plan featured\"><b>Anual</b><p class=\"fine\">Recomendado · $49 al año</p></div>";
+    html += "<div class=\"plan\"><b>Mensual</b><p class=\"fine\">$7 al mes</p></div>";
     html += "<div class=\"stack\">";
     html += "<button class=\"btn primary wide\" id=\"pay\">Continuar al pago</button>";
     html += "<button class=\"btn lime wide\" id=\"sim\">Simular suscripción activa (sin cobro)</button>";
