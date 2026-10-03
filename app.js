@@ -274,6 +274,8 @@
     if (restart || !audio.src || audio.src.indexOf(clip.audio) === -1) audio.src = clip.audio;
     if (clip.startSeconds != null) audio.currentTime = clip.startSeconds;
     else if (restart) audio.currentTime = 0;
+    var vidRestart = document.getElementById("clip-video");
+    if (restart && vidRestart) vidRestart.currentTime = 0;
     playClipVideo();
     audio.play().then(function () {
       markHeard(clip.id);
@@ -299,6 +301,38 @@
   function repetir(clip) {
     if (clip.audio) playVoa(clip, true);
     else speakBrowser(clip);
+  }
+
+  function resumeMedia(clip) {
+    var audio = $("voa");
+    var vid = document.getElementById("clip-video");
+    function resumeVideo() {
+      if (!vid) return;
+      var pending = vid.play();
+      if (pending && pending.catch) pending.catch(function () {});
+    }
+    if (!clip.audio) {
+      resumeVideo();
+      return;
+    }
+    var same = !!(audio.src && audio.src.indexOf(clip.audio) !== -1);
+    if (same && audio.currentTime > 0.05) {
+      resumeVideo();
+      audio.play().then(function () {
+        markHeard(clip.id);
+      }).catch(function () {
+        setStatus("No se pudo reproducir el audio de VOA. Usa la voz del navegador. Esa voz no es de VOA.");
+      });
+      return;
+    }
+    playVoa(clip, true);
+  }
+
+  function pauseMedia() {
+    var audio = $("voa");
+    if (audio) audio.pause();
+    var vid = document.getElementById("clip-video");
+    if (vid) vid.pause();
   }
 
   function toggleRecord() {
@@ -562,8 +596,13 @@
     html += "<button class=\"chip" + (state.direction === "en-es" ? " on" : "") + "\" data-dir=\"en-es\">Inglés → Español</button>";
     html += "<button class=\"chip" + (state.direction === "es-en" ? " on" : "") + "\" data-dir=\"es-en\">Español → Inglés</button>";
     html += "</div>";
+    if (state.category !== "all") {
+      var catHas = levelAll().some(function (c) { return c.category === state.category; });
+      if (!catHas) state.category = "all";
+    }
     html += "<div class=\"row\" id=\"cats\" style=\"margin-top:0.5rem\">";
     Object.keys(CATS).forEach(function (key) {
+      if (key !== "all" && !levelAll().some(function (c) { return c.category === key; })) return;
       html += "<button class=\"chip" + (state.category === key ? " on" : "") + "\" data-cat=\"" + key + "\">" + CATS[key] + "</button>";
     });
     html += "</div>";
@@ -578,7 +617,7 @@
     html += "<article class=\"card\">";
     if (clip.video) {
       html += "<div class=\"clip-window\"><video class=\"clip-video\" id=\"clip-video\" src=\"" + esc(clip.video) + "\" muted loop playsinline autoplay></video></div>";
-      html += "<p class=\"note\">La imagen es muda. El audio que suena es de VOA, no de las personas del video. Licencia Mixkit.</p>";
+      html += "<p class=\"note\">Video de la lección completa de VOA, mismo programa.</p>";
     }
     html += "<p class=\"line-label\">Inglés</p>";
     html += "<p class=\"sentence\">" + esc(clip.en) + "</p>";
@@ -605,7 +644,11 @@
       html += "<p><a class=\"link\" href=\"" + esc(clip.lessonPage) + "\" target=\"_blank\" rel=\"noopener\">Abrir la lección en VOA</a></p>";
     }
     html += "<div class=\"stack\" style=\"margin-top:0.7rem\">";
-    html += "<button class=\"btn primary wide\" id=\"repetir\">Repetir frase</button>";
+    html += "<div class=\"row\">";
+    html += "<button class=\"btn primary\" id=\"repetir\">Repetir frase</button>";
+    html += "<button class=\"btn\" id=\"play-resume\" aria-label=\"Reproducir\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><polygon points=\"8,5 19,12 8,19\" fill=\"currentColor\"/></svg></button>";
+    html += "<button class=\"btn\" id=\"pause-both\" aria-label=\"Pausar\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"6\" y=\"5\" width=\"4\" height=\"14\" fill=\"currentColor\"/><rect x=\"14\" y=\"5\" width=\"4\" height=\"14\" fill=\"currentColor\"/></svg></button>";
+    html += "</div>";
     html += "<button class=\"btn wide\" id=\"tts\">Escuchar con voz del navegador</button>";
     html += "<button class=\"btn wide\" id=\"rec\">" + (state.recording ? "Detener" : "Grabar") + "</button>";
     html += "<button class=\"btn wide\" id=\"play-take\"" + (state.takeUrl ? "" : " disabled") + ">Escuchar mi toma</button>";
@@ -702,6 +745,10 @@
     if (vidEl) vidEl.addEventListener("click", function () { repetir(clip); });
     var rep = $("repetir");
     if (rep) rep.addEventListener("click", function () { repetir(clip); });
+    var playResumeBtn = $("play-resume");
+    if (playResumeBtn) playResumeBtn.addEventListener("click", function () { resumeMedia(clip); });
+    var pauseBtn = $("pause-both");
+    if (pauseBtn) pauseBtn.addEventListener("click", pauseMedia);
     var tts = $("tts");
     if (tts) tts.addEventListener("click", function () { speakBrowser(clip); });
     var rec = $("rec");
