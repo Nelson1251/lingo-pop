@@ -20,6 +20,15 @@
     intermedio: { label: "Intermedio", blurb: "Frases un poco más largas." },
     avanzado: { label: "Avanzado", blurb: "Frases más largas." }
   };
+  var THEME_ORDER = ["saludos", "restaurante", "ciudad", "compras", "gimnasio", "trabajo"];
+  var THEMES = {
+    saludos: { label: "Saludos", blurb: "Decir hola y cómo estás." },
+    restaurante: { label: "Restaurante", blurb: "Pedir comida." },
+    ciudad: { label: "La ciudad", blurb: "Washington, calles y el apartamento." },
+    compras: { label: "Compras", blurb: "La lista y los ingredientes." },
+    gimnasio: { label: "El gimnasio", blurb: "Dónde queda y cómo llegar." },
+    trabajo: { label: "Trabajo", blurb: "Entrevista, oficina y el noticiero." }
+  };
   var CATS = {
     all: "Todas",
     greetings: "Saludos",
@@ -34,6 +43,7 @@
     clips: [],
     screen: "home",
     level: null,
+    theme: null,
     index: 0,
     category: "all",
     direction: "en-es",
@@ -175,6 +185,7 @@
   }
 
   function usesEnergy() {
+    if (state.theme) return false;
     return !!state.level && state.level !== "basico" && !isSubscribed();
   }
 
@@ -216,14 +227,15 @@
   function levelClips() {
     return state.clips.filter(function (c) {
       if (!isCorePhrase(c)) return false;
-      if (c.level !== state.level) return false;
-      if (state.category !== "all" && c.category !== state.category) return false;
+      if (!state.theme || c.category !== state.theme) return false;
       return true;
     }).sort(function (a, b) { return clipSeq(a.id) - clipSeq(b.id); });
   }
 
   function levelAll() {
-    return state.clips.filter(function (c) { return isCorePhrase(c) && c.level === state.level; });
+    return state.clips.filter(function (c) {
+      return isCorePhrase(c) && !!state.theme && c.category === state.theme;
+    });
   }
 
   function dominadasInLevel() {
@@ -588,6 +600,20 @@
     }
   }
 
+  function openTheme(theme) {
+    state.theme = theme;
+    state.level = null;
+    state.index = 0;
+    state.category = "all";
+    state.checkout = false;
+    state.status = "";
+    state.homeNote = "";
+    stopAudio();
+    state.screen = "practice";
+    state.playWithVideo = true;
+    render();
+  }
+
   function openLevel(level) {
     state.level = level;
     state.index = 0;
@@ -632,6 +658,7 @@
     state.screen = "home";
     state.checkout = false;
     state.level = null;
+    state.theme = null;
     render();
   }
 
@@ -724,19 +751,15 @@
   }
 
   function renderHome() {
-    var html = "<h1>Elige un nivel</h1><p class=\"lead\">Mira el video, lee el inglés arriba y el español abajo, y pasa a la siguiente frase.</p>";
+    var html = "<h1>Elige un tema</h1><p class=\"lead\">Mira el video, lee el inglés arriba y el español abajo, y pasa a la siguiente frase.</p>";
     if (state.homeNote) html += "<p class=\"warn\">" + esc(state.homeNote) + "</p>";
     html += "<div class=\"stack\">";
-    Object.keys(LEVELS).forEach(function (key) {
-      var n = state.clips.filter(function (c) { return c.level === key && isCorePhrase(c); }).length;
-      html += "<button class=\"level-btn " + key + "\" data-level=\"" + key + "\"><strong>" +
-        LEVELS[key].label + "</strong><span>" + n + " frases · " + esc(bannerFor(key)) + "</span></button>";
+    THEME_ORDER.forEach(function (key) {
+      var n = state.clips.filter(function (c) { return c.category === key && isCorePhrase(c); }).length;
+      html += "<button class=\"level-btn " + key + "\" data-theme=\"" + key + "\"><strong>" +
+        THEMES[key].label + "</strong><span>" + n + " frases · " + esc(THEMES[key].blurb) + "</span></button>";
     });
     html += "</div>";
-    if (!isSubscribed()) {
-      var e = energyNow();
-      html += "<p class=\"energy\">Energía " + e + "/" + ENERGY_MAX + " en Intermedio y Avanzado. Básico no gasta.</p>";
-    }
     if (isSubscribed()) {
       html += "<p class=\"fine\">La suscripción demo está activa en este navegador. Energía ilimitada.</p>";
       html += "<button class=\"btn wide\" id=\"cancel-sub\">Cancelar suscripción en este sitio</button>";
@@ -780,6 +803,7 @@
   }
 
   function subEnergyHtml() {
+    if (state.theme) return "";
     if (!isSubscribed() || state.level === "basico") return "";
     var html = "<p class=\"energy\">Energía ilimitada</p>";
     var days = trialDaysStarted();
@@ -793,8 +817,8 @@
     var totalLevel = levelAll().length;
     var done = dominadasInLevel();
     if (!list.length) {
-      var empty = "<button class=\"back\" id=\"go-home\">← Niveles</button>";
-      empty += "<p class=\"lead\">No hay frases en este nivel.</p>";
+      var empty = "<button class=\"back\" id=\"go-home\">← Temas</button>";
+      empty += "<p class=\"lead\">No hay frases en este tema.</p>";
       return empty;
     }
     var clip = list[state.index];
@@ -813,8 +837,8 @@
     var scrub = "<div class=\"scrub\" id=\"scrub\" role=\"slider\" tabindex=\"0\" aria-label=\"Avance del video\" aria-valuemin=\"0\" aria-valuemax=\"100\" aria-valuenow=\"0\"><span id=\"scrub-fill\"></span></div>";
     var html = "<div class=\"stage\">";
     html += "<div class=\"stage-main\">";
-    html += "<button class=\"back\" id=\"go-home\">← Niveles</button>";
-    html += "<p class=\"episode-kicker\">" + esc(LEVELS[state.level].label) + " · " + (state.index + 1) + " de " + list.length + " · " + done + " dominadas</p>";
+    html += "<button class=\"back\" id=\"go-home\">← Temas</button>";
+    html += "<p class=\"episode-kicker\">" + esc(THEMES[state.theme].label) + " · " + (state.index + 1) + " de " + list.length + " · " + done + " dominadas</p>";
     if (clip.video) {
       html += "<div class=\"player\"><div class=\"clip-window\"><video class=\"clip-video\" id=\"clip-video\" src=\"" + esc(clip.video) + "\" playsinline></video>";
       html += "<div class=\"subs\">";
@@ -860,7 +884,7 @@
       html += "<button class=\"btn wide\" id=\"cancel-sub\">Cancelar suscripción en este sitio</button>";
     }
     html += "</div>";
-    html += "<aside class=\"script\" aria-label=\"Frases de este nivel\"><h2>Frases</h2>";
+    html += "<aside class=\"script\" aria-label=\"frases de este tema\"><h2>Frases</h2>";
     list.forEach(function (c, i) {
       html += "<button type=\"button\" class=\"script-line" + (i === state.index ? " on" : "") + "\" data-jump=\"" + i + "\">";
       html += "<span class=\"script-en\">" + esc(c.en) + "</span>";
@@ -904,6 +928,9 @@
   }
 
   function bind() {
+    document.querySelectorAll("[data-theme]").forEach(function (btn) {
+      btn.addEventListener("click", function () { openTheme(btn.getAttribute("data-theme")); });
+    });
     document.querySelectorAll("[data-level]").forEach(function (btn) {
       btn.addEventListener("click", function () { openLevel(btn.getAttribute("data-level")); });
     });
@@ -1032,7 +1059,7 @@
 
   function boot() {
     energyNow();
-    fetch("clips.json?v=6")
+    fetch("clips.json?v=7")
       .then(function (res) {
         if (!res.ok) throw new Error("clips");
         return res.json();
@@ -1047,7 +1074,7 @@
     renderPoints("");
     setInterval(function () {
       energyNow();
-      if (state.screen === "practice" && state.level && state.level !== "basico" && !isSubscribed()) {
+      if (!state.theme && state.screen === "practice" && state.level && state.level !== "basico" && !isSubscribed()) {
         var st = premiumState(false);
         if (st.mode === "expired") {
           state.screen = "gate";
