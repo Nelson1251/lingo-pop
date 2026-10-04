@@ -268,7 +268,7 @@
       pending.then(function () {
         var clip = currentClip();
         if (clip) markHeard(clip.id);
-        setStatus("Video de la lección completa con audio.");
+        setStatus("Escena corta de VOA.");
       }).catch(function () {
         setStatus("Toca el botón de reproducir para oír el video.");
       });
@@ -310,7 +310,7 @@
     else if (restart) audio.currentTime = 0;
     audio.play().then(function () {
       markHeard(clip.id);
-      setStatus("Audio de la lección completa. No es un recorte de 5–15 segundos.");
+      setStatus("Audio de la escena corta.");
     }).catch(function () {
       setStatus("No se pudo reproducir el audio de VOA. Usa la voz del navegador. Esa voz no es de VOA.");
     });
@@ -829,7 +829,7 @@
     }
     html += "<p class=\"gloss-pop\" id=\"gloss-pop\" hidden></p>";
     if (core) html += vocabCardHtml(clip);
-    html += "<p class=\"fine\">Toca una palabra del inglés para ver qué significa. El video sigue siendo la lección completa de VOA.</p>";
+    html += "<p class=\"fine\">Toca una palabra del inglés para ver qué significa. El video es solo esta frase.</p>";
     ensureOrder(clip);
     html += "<details class=\"more\"><summary>Practicar esta frase</summary>";
     html += "<section class=\"exercise\" id=\"order-box\">";
@@ -1032,7 +1032,7 @@
 
   function boot() {
     energyNow();
-    fetch("clips.json?v=5")
+    fetch("clips.json?v=6")
       .then(function (res) {
         if (!res.ok) throw new Error("clips");
         return res.json();
