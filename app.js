@@ -16,8 +16,9 @@
   var HOUR_MS = 60 * 60 * 1000;
   var ENERGY_MAX = 25;
   var LEVELS = {
-    basico: { label: "Principiante", blurb: "Siempre gratis. Sin energía y sin límite." },
-    intermedio: { label: "Full access", blurb: "Frases un poco más largas." }
+    basico: { label: "Básico", blurb: "Frases cortas. Siempre gratis." },
+    intermedio: { label: "Intermedio", blurb: "Frases un poco más largas." },
+    avanzado: { label: "Avanzado", blurb: "Frases más largas." }
   };
   var CATS = {
     all: "Todas",
@@ -27,7 +28,7 @@
     shopping: "Compras",
     food: "Comida"
   };
-  var EMPTY_MSG = "Sin energía. Recuperas aproximadamente 1 por hora. Puedes repetir esta frase, pero no pasar a otra. Principiante sigue abierto.";
+  var EMPTY_MSG = "Sin energía. Recuperas aproximadamente 1 por hora. Puedes repetir esta frase, pero no pasar a otra. Básico sigue abierto.";
 
   var state = {
     clips: [],
@@ -202,6 +203,7 @@
 
   function levelClips() {
     return state.clips.filter(function (c) {
+      if (!isCorePhrase(c)) return false;
       if (c.level !== state.level) return false;
       if (state.category !== "all" && c.category !== state.category) return false;
       return true;
@@ -209,7 +211,7 @@
   }
 
   function levelAll() {
-    return state.clips.filter(function (c) { return c.level === state.level; });
+    return state.clips.filter(function (c) { return isCorePhrase(c) && c.level === state.level; });
   }
 
   function dominadasInLevel() {
@@ -247,7 +249,7 @@
     stopAudio();
     vid.muted = false;
     vid.volume = 1;
-    vid.loop = true;
+    vid.loop = false;
     if (opts.restart) vid.currentTime = 0;
     var pending = vid.play();
     if (pending && pending.then) {
@@ -710,18 +712,18 @@
   }
 
   function renderHome() {
-    var html = "<h1>Elige un nivel</h1><p class=\"lead\">Una frase a la vez. Escucha, repite y marca Dominada.</p>";
+    var html = "<h1>Elige un nivel</h1><p class=\"lead\">Mira el video, lee el inglés arriba y el español abajo, y pasa a la siguiente frase.</p>";
     if (state.homeNote) html += "<p class=\"warn\">" + esc(state.homeNote) + "</p>";
     html += "<div class=\"stack\">";
     Object.keys(LEVELS).forEach(function (key) {
-      var n = state.clips.filter(function (c) { return c.level === key; }).length;
+      var n = state.clips.filter(function (c) { return c.level === key && isCorePhrase(c); }).length;
       html += "<button class=\"level-btn " + key + "\" data-level=\"" + key + "\"><strong>" +
         LEVELS[key].label + "</strong><span>" + n + " frases · " + esc(bannerFor(key)) + "</span></button>";
     });
     html += "</div>";
     if (!isSubscribed()) {
       var e = energyNow();
-      html += "<p class=\"energy\">Energía " + e + "/" + ENERGY_MAX + " en Full access. Principiante no gasta.</p>";
+      html += "<p class=\"energy\">Energía " + e + "/" + ENERGY_MAX + " en Intermedio y Avanzado. Básico no gasta.</p>";
     }
     if (isSubscribed()) {
       html += "<p class=\"fine\">La suscripción demo está activa en este navegador. Energía ilimitada.</p>";
@@ -734,14 +736,14 @@
     var label = LEVELS[state.level].label;
     var html = "<button class=\"back\" id=\"go-home\">← Niveles</button>";
     html += "<h1>" + esc(label) + "</h1>";
-    html += "<p class=\"lead\">La prueba gratis de 7 días terminó. Elige un plan para seguir en este nivel. Principiante sigue gratis.</p>";
+    html += "<p class=\"lead\">La prueba gratis de 7 días terminó. Elige un plan para seguir en este nivel. Básico sigue gratis.</p>";
     html += "<div class=\"plan featured\"><b>Anual</b><p class=\"fine\">Recomendado · $49 al año</p></div>";
     html += "<div class=\"plan\"><b>Mensual</b><p class=\"fine\">$7 al mes</p></div>";
     html += "<div class=\"stack\">";
     html += "<button class=\"btn primary wide\" id=\"pay\">Continuar al pago</button>";
     html += "<button class=\"btn lime wide\" id=\"sim\">Simular suscripción activa (sin cobro)</button>";
     html += "<button class=\"btn wide\" id=\"cancel-sub\">Cancelar suscripción en este sitio</button>";
-    html += "<button class=\"btn wide\" id=\"to-basico\">Volver a Principiante</button>";
+    html += "<button class=\"btn wide\" id=\"to-basico\">Volver a Básico</button>";
     html += "</div>";
     html += "<p class=\"fine\">Si la app sale en iPhone, el pago será por la App Store. En Android, por Google Play. Esta versión web no usa esas tiendas.</p>";
     if (state.checkout) {
@@ -778,63 +780,48 @@
     if (state.index >= list.length) state.index = 0;
     var totalLevel = levelAll().length;
     var done = dominadasInLevel();
-    var pct = totalLevel ? Math.round((done / totalLevel) * 100) : 0;
-    var html = "<button class=\"back\" id=\"go-home\">← Niveles</button>";
-    html += "<h1>" + LEVELS[state.level].label + "</h1>";
-    html += energyBlockHtml() + subEnergyHtml();
-    html += "<p class=\"lead\">" + done + " de " + totalLevel + " dominadas</p>";
-    html += "<div class=\"bar\" aria-hidden=\"true\"><span style=\"width:" + pct + "%\"></span></div>";
-    html += "<div class=\"row\" id=\"dirs\">";
-    html += "<button class=\"chip" + (state.direction === "en-es" ? " on" : "") + "\" data-dir=\"en-es\">Inglés → Español</button>";
-    html += "<button class=\"chip" + (state.direction === "es-en" ? " on" : "") + "\" data-dir=\"es-en\">Español → Inglés</button>";
-    html += "</div>";
-    if (state.category !== "all") {
-      var catHas = levelAll().some(function (c) { return c.category === state.category; });
-      if (!catHas) state.category = "all";
-    }
-    html += "<div class=\"row\" id=\"cats\" style=\"margin-top:0.5rem\">";
-    Object.keys(CATS).forEach(function (key) {
-      if (key !== "all" && !levelAll().some(function (c) { return c.category === key; })) return;
-      html += "<button class=\"chip" + (state.category === key ? " on" : "") + "\" data-cat=\"" + key + "\">" + CATS[key] + "</button>";
-    });
-    html += "</div>";
     if (!list.length) {
-      html += "<p class=\"lead\">No hay frases de esta categoría en este nivel.</p>";
-      return html;
+      var empty = "<button class=\"back\" id=\"go-home\">← Niveles</button>";
+      empty += "<p class=\"lead\">No hay frases en este nivel.</p>";
+      return empty;
     }
     var clip = list[state.index];
     beginVisit(clip.id);
     if (state.level !== "basico") rememberPhrase(clip.id);
     var r = row(clip.id);
+    var core = isCorePhrase(clip);
+    var shownEs = core ? clip.es : (clip.spokenEs || clip.es);
     var transport = "<div class=\"transport\">"
-      + "<button class=\"btn\" id=\"play-resume\" aria-label=\"Reproducir\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><polygon points=\"8,5 19,12 8,19\" fill=\"currentColor\"/></svg></button>"
-      + "<button class=\"btn\" id=\"pause-both\" aria-label=\"Pausar\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"6\" y=\"5\" width=\"4\" height=\"14\" fill=\"currentColor\"/><rect x=\"14\" y=\"5\" width=\"4\" height=\"14\" fill=\"currentColor\"/></svg></button>"
+      + "<button class=\"btn\" id=\"prev\" type=\"button\">Anterior</button>"
+      + "<button class=\"btn\" id=\"play-resume\" type=\"button\" aria-label=\"Reproducir\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><polygon points=\"8,5 19,12 8,19\" fill=\"currentColor\"/></svg></button>"
+      + "<button class=\"btn\" id=\"pause-both\" type=\"button\" aria-label=\"Pausar\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"6\" y=\"5\" width=\"4\" height=\"14\" fill=\"currentColor\"/><rect x=\"14\" y=\"5\" width=\"4\" height=\"14\" fill=\"currentColor\"/></svg></button>"
+      + "<button class=\"btn primary\" id=\"repetir\" type=\"button\">Repetir</button>"
+      + "<button class=\"btn\" id=\"next\" type=\"button\">Siguiente</button>"
       + "</div>";
     var scrub = "<div class=\"scrub\" id=\"scrub\" role=\"slider\" tabindex=\"0\" aria-label=\"Avance del video\" aria-valuemin=\"0\" aria-valuemax=\"100\" aria-valuenow=\"0\"><span id=\"scrub-fill\"></span></div>";
-    html += "<article class=\"card\">";
+    var html = "<div class=\"stage\">";
+    html += "<div class=\"stage-main\">";
+    html += "<button class=\"back\" id=\"go-home\">← Niveles</button>";
+    html += "<p class=\"episode-kicker\">" + esc(LEVELS[state.level].label) + " · " + (state.index + 1) + " de " + list.length + " · " + done + " dominadas</p>";
     if (clip.video) {
-      html += "<div class=\"player\"><div class=\"clip-window\"><video class=\"clip-video\" id=\"clip-video\" src=\"" + esc(clip.video) + "\" loop playsinline></video></div>" + scrub + transport + "</div>";
-      html += "<p class=\"note\">" + (clip.shortCut ? "Corte corto del diálogo. No es la lección completa." : "Video de la lección completa de VOA, mismo programa.") + "</p>";
+      html += "<div class=\"player\"><div class=\"clip-window\"><video class=\"clip-video\" id=\"clip-video\" src=\"" + esc(clip.video) + "\" playsinline></video>";
+      html += "<div class=\"subs\">";
+      html += "<p class=\"sentence\" id=\"en-line\">" + (core ? tapCaption(clip) : esc(clip.spokenEn || clip.en)) + "</p>";
+      html += "<p class=\"translation\" id=\"es-line\">" + esc(shownEs) + "</p>";
+      html += "</div></div>" + scrub + transport + "</div>";
     } else {
-      html += "<div class=\"player\">" + transport + "</div>";
+      html += "<div class=\"player\"><div class=\"subs subs-solo\">";
+      html += "<p class=\"sentence\" id=\"en-line\">" + (core ? tapCaption(clip) : esc(clip.en)) + "</p>";
+      html += "<p class=\"translation\" id=\"es-line\">" + esc(shownEs) + "</p>";
+      html += "</div>" + transport + "</div>";
     }
+    html += "<p class=\"gloss-pop\" id=\"gloss-pop\" hidden></p>";
+    if (core) html += vocabCardHtml(clip);
+    html += "<p class=\"fine\">Toca una palabra del inglés para ver qué significa. El video sigue siendo la lección completa de VOA.</p>";
     ensureOrder(clip);
-    var core = isCorePhrase(clip);
-    var shownEn = core ? clip.en : (clip.spokenEn || clip.en);
-    var shownEs = core ? clip.es : (clip.spokenEs || clip.es);
-    var captionClass = !core && clip.spokenEn ? "sentence spoken" : "sentence";
-    html += "<p class=\"line-label\">Inglés</p>";
-    if (core) html += "<p class=\"" + captionClass + "\" id=\"en-line\">" + tapCaption(clip) + "</p>";
-    else html += "<p class=\"" + captionClass + "\" id=\"en-line\">" + esc(shownEn) + "</p>";
-    html += "<p class=\"line-label\">Español</p>";
-    html += "<p class=\"" + (!core && clip.spokenEs ? "translation spoken" : "translation") + "\" id=\"es-line\">" + esc(shownEs) + "</p>";
-    if (core) {
-      html += "<p class=\"gloss-pop\" id=\"gloss-pop\" hidden></p>";
-      html += vocabCardHtml(clip);
-    }
+    html += "<details class=\"more\"><summary>Practicar esta frase</summary>";
     html += "<section class=\"exercise\" id=\"order-box\">";
     html += "<h2>Ordena la frase</h2>";
-    html += "<p class=\"fine\">Toca una palabra para armar la frase. Toca una de la respuesta para devolverla.</p>";
     html += "<div class=\"word-row\" id=\"order-built\">" + wordButtons(state.order.built, "built") + "</div>";
     html += "<div class=\"word-row\" id=\"order-pool\">" + wordButtons(state.order.pool, "pool") + "</div>";
     html += "<div class=\"row\">";
@@ -845,30 +832,7 @@
     html += "<p class=\"status\" id=\"order-msg\">" + esc(state.order.msg || "") + "</p>";
     html += "<p class=\"sentence\" id=\"order-answer\"" + (state.order.revealed ? "" : " hidden") + ">" + (state.order.revealed ? esc(clip.en) : "") + "</p>";
     html += "</section>";
-    html += "<p class=\"fine\">" + esc(CATS[clip.category] || clip.category) + "</p>";
-    html += "<section class=\"pair" + (state.direction === "en-es" ? " focus" : "") + "\">";
-    html += "<h2>Inglés → Español</h2>";
-    html += "<p class=\"sentence\">" + esc(shownEn) + "</p>";
-    html += "<p class=\"translation\">" + esc(clip.es) + "</p>";
-    html += "</section>";
-    html += "<section class=\"pair" + (state.direction === "es-en" ? " focus" : "") + "\">";
-    html += "<h2>Español → Inglés</h2>";
-    html += "<p class=\"sentence\">" + esc(clip.es) + "</p>";
-    html += "<p class=\"translation\">" + esc(shownEn) + "</p>";
-    html += "</section>";
-    html += "<p class=\"note\">" + esc(clip.note || "") + "</p>";
-    if (clip.audio) {
-      html += "<p class=\"note\">Esto reproduce el audio completo de la lección, no un recorte de 5–15 segundos.</p>";
-      html += "<button class=\"play\" id=\"play-voa\">Escuchar VOA</button>";
-    } else {
-      html += "<p class=\"note\">No hay archivo de audio de VOA. Puedes usar la voz del navegador. Esa voz no es de VOA.</p>";
-      html += "<button class=\"play\" id=\"play-voa\" disabled>Audio no disponible</button>";
-      html += "<p><a class=\"link\" href=\"" + esc(clip.lessonPage) + "\" target=\"_blank\" rel=\"noopener\">Abrir la lección en VOA</a></p>";
-    }
-    html += "<div class=\"stack\" style=\"margin-top:0.7rem\">";
-    html += "<div class=\"row\">";
-    html += "<button class=\"btn primary\" id=\"repetir\">Repetir frase</button>";
-    html += "</div>";
+    html += "<div class=\"stack\">";
     html += "<button class=\"btn wide\" id=\"tts\">Escuchar con voz del navegador</button>";
     html += "<button class=\"btn wide\" id=\"rec\">" + (state.recording ? "Detener" : "Grabar") + "</button>";
     html += "<button class=\"btn wide\" id=\"play-take\"" + (state.takeUrl ? "" : " disabled") + ">Escuchar mi toma</button>";
@@ -876,17 +840,21 @@
     html += "<button class=\"btn wide\" id=\"wrong\">Me equivoqué</button>";
     html += "<button class=\"btn lime wide" + (r.dominada ? " on" : "") + "\" id=\"dominada\">" + (r.dominada ? "Dominada" : "Marcar dominada") + "</button>";
     html += "</div>";
-    html += "<p class=\"status\" id=\"status\">" + esc(state.status) + "</p>";
     html += "<p class=\"fine\"><a class=\"link\" href=\"" + esc(clip.lessonPage) + "\" target=\"_blank\" rel=\"noopener\">Página de la lección</a></p>";
-    html += "</article>";
-    html += "<div class=\"nav\">";
-    html += "<button class=\"btn\" id=\"prev\">Anterior</button>";
-    html += "<button class=\"btn\" id=\"next\">Siguiente</button>";
-    html += "</div>";
-    html += "<p class=\"fine\" style=\"text-align:center\">Frase " + (state.index + 1) + " de " + list.length + "</p>";
+    html += "</details>";
+    html += energyBlockHtml() + subEnergyHtml();
+    html += "<p class=\"status\" id=\"status\">" + esc(state.status) + "</p>";
     if (state.level !== "basico" && isSubscribed()) {
       html += "<button class=\"btn wide\" id=\"cancel-sub\">Cancelar suscripción en este sitio</button>";
     }
+    html += "</div>";
+    html += "<aside class=\"script\" aria-label=\"Frases de este nivel\"><h2>Frases</h2>";
+    list.forEach(function (c, i) {
+      html += "<button type=\"button\" class=\"script-line" + (i === state.index ? " on" : "") + "\" data-jump=\"" + i + "\">";
+      html += "<span class=\"script-en\">" + esc(c.en) + "</span>";
+      html += "<span class=\"script-es\">" + esc(c.es) + "</span></button>";
+    });
+    html += "</aside></div>";
     return html;
   }
 
@@ -926,6 +894,20 @@
   function bind() {
     document.querySelectorAll("[data-level]").forEach(function (btn) {
       btn.addEventListener("click", function () { openLevel(btn.getAttribute("data-level")); });
+    });
+    document.querySelectorAll("[data-jump]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        if (energyBlocked()) {
+          state.status = EMPTY_MSG;
+          render();
+          return;
+        }
+        state.index = Number(btn.getAttribute("data-jump"));
+        state.status = "";
+        stopAudio();
+        state.playWithVideo = true;
+        render();
+      });
     });
     var home = $("go-home");
     if (home) home.addEventListener("click", goHome);
@@ -1038,7 +1020,7 @@
 
   function boot() {
     energyNow();
-    fetch("clips.json")
+    fetch("clips.json?v=4")
       .then(function (res) {
         if (!res.ok) throw new Error("clips");
         return res.json();
