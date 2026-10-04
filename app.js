@@ -457,6 +457,46 @@
     paintOrder();
   }
 
+
+  function isCorePhrase(clip) {
+    var m = /^l0*(\d+)$/.exec(clip && clip.id || "");
+    if (!m) return false;
+    var n = Number(m[1]);
+    return n >= 1 && n <= 24;
+  }
+
+  function glossKey(tok) {
+    return String(tok || "").toLowerCase().replace(/[^a-z-]/g, "");
+  }
+
+  function tapCaption(clip) {
+    return String(clip.en || "").split(/\s+/).filter(Boolean).map(function (tok) {
+      return "<button type=\"button\" class=\"tap-word\" data-tok=\"" + esc(tok) + "\">" + esc(tok) + "</button>";
+    }).join(" ");
+  }
+
+  function vocabCardHtml(clip) {
+    var g = window.PHRASE_GLOSS && window.PHRASE_GLOSS[clip.id];
+    var items = g && g.vocab || [];
+    if (!items.length) return "";
+    var html = "<section class=\"vocab-card\"><h2>Vocabulario de esta frase</h2><ul>";
+    items.forEach(function (item) {
+      html += "<li><strong>" + esc(item.en) + "</strong> — " + esc(item.es) + "</li>";
+    });
+    html += "</ul></section>";
+    return html;
+  }
+
+  function showGloss(clip, tok) {
+    var pop = document.getElementById("gloss-pop");
+    if (!pop) return;
+    var g = window.PHRASE_GLOSS && window.PHRASE_GLOSS[clip.id];
+    var es = g && g.words && g.words[glossKey(tok)];
+    pop.hidden = false;
+    if (es) pop.textContent = tok.replace(/[.,!?¿¡]/g, "") + " — " + es;
+    else pop.textContent = "Frase: " + clip.es;
+  }
+
   function blankDisplay(clip) {
     var solved = state.blankSolved[clip.id];
     var tries = state.blankTries[clip.id] || 0;
@@ -483,7 +523,7 @@
     if (msg) msg.textContent = state.blankMsg[clip.id] || "";
     if (sentence) sentence.textContent = blankDisplay(clip);
     var top = document.getElementById("en-line");
-    if (top && !clip.spokenEn) top.textContent = blankDisplay(clip);
+    if (top && !clip.spokenEn && !isCorePhrase(clip)) top.textContent = blankDisplay(clip);
   }
 
   function toggleRecord() {
@@ -779,13 +819,19 @@
       html += "<div class=\"player\">" + transport + "</div>";
     }
     ensureOrder(clip);
-    var shownEn = clip.spokenEn || clip.en;
-    var shownEs = clip.spokenEs || clip.es;
-    var captionClass = clip.spokenEn ? "sentence spoken" : "sentence";
+    var core = isCorePhrase(clip);
+    var shownEn = core ? clip.en : (clip.spokenEn || clip.en);
+    var shownEs = core ? clip.es : (clip.spokenEs || clip.es);
+    var captionClass = !core && clip.spokenEn ? "sentence spoken" : "sentence";
     html += "<p class=\"line-label\">Inglés</p>";
-    html += "<p class=\"" + captionClass + "\" id=\"en-line\">" + esc(shownEn) + "</p>";
+    if (core) html += "<p class=\"" + captionClass + "\" id=\"en-line\">" + tapCaption(clip) + "</p>";
+    else html += "<p class=\"" + captionClass + "\" id=\"en-line\">" + esc(shownEn) + "</p>";
     html += "<p class=\"line-label\">Español</p>";
-    html += "<p class=\"" + (clip.spokenEs ? "translation spoken" : "translation") + "\">" + esc(shownEs) + "</p>";
+    html += "<p class=\"" + (!core && clip.spokenEs ? "translation spoken" : "translation") + "\" id=\"es-line\">" + esc(shownEs) + "</p>";
+    if (core) {
+      html += "<p class=\"gloss-pop\" id=\"gloss-pop\" hidden></p>";
+      html += vocabCardHtml(clip);
+    }
     html += "<section class=\"exercise\" id=\"order-box\">";
     html += "<h2>Ordena la frase</h2>";
     html += "<p class=\"fine\">Toca una palabra para armar la frase. Toca una de la respuesta para devolverla.</p>";
@@ -942,6 +988,9 @@
       vidEl.addEventListener("seeked", paintScrub);
       scrubEl.addEventListener("click", function (ev) { seekScrub(ev.clientX); });
     }
+    document.querySelectorAll(".tap-word").forEach(function (btn) {
+      btn.addEventListener("click", function () { showGloss(clip, btn.getAttribute("data-tok")); });
+    });
     var rep = $("repetir");
     if (rep) rep.addEventListener("click", function () { repetir(clip); });
     var playResumeBtn = $("play-resume");
