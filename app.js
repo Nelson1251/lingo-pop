@@ -201,13 +201,25 @@
     localStorage.setItem(KEYS.streak, String(Math.max(0, n)));
   }
 
+  // Sidebar order is the order each line is spoken in its VOA lesson,
+  // and lessons run in series order. Not the old id order.
+  var CLIP_SEQ = [
+    "l02", "l01", "l24", "l23", "l16", "l06", "l12", "l10", "l15", "l08",
+    "l17", "l03", "l04", "l18", "l07", "l13", "l11",
+    "l21", "l05", "l22", "l19", "l20", "l14", "l09"
+  ];
+  function clipSeq(id) {
+    var i = CLIP_SEQ.indexOf(id);
+    return i < 0 ? 999 : i;
+  }
+
   function levelClips() {
     return state.clips.filter(function (c) {
       if (!isCorePhrase(c)) return false;
       if (c.level !== state.level) return false;
       if (state.category !== "all" && c.category !== state.category) return false;
       return true;
-    });
+    }).sort(function (a, b) { return clipSeq(a.id) - clipSeq(b.id); });
   }
 
   function levelAll() {
