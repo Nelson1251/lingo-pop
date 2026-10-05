@@ -85,17 +85,17 @@
   },
   {
     "id": "l07",
-    "en": "Can you cook? You can be a chef in a restaurant.",
-    "es": "¿Sabes cocinar? Puedes ser chef en un restaurante.",
+    "en": "Okay, I'll have the beef then.",
+    "es": "Bueno, entonces me llevo la carne.",
     "category": "restaurante",
     "level": "intermedio",
-    "lessonPage": "https://learningenglish.voanews.com/a/lets-learn-english-lesson-20-what-can-you-do/3384429.html",
-    "audio": "media/lesson-20.mp3",
+    "lessonPage": "https://learningenglish.voanews.com/a/lets-learn-english-lesson-23-what-do-you-want/3413753.html",
+    "audio": "media/lesson-23.mp3",
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
-    "startSeconds": null,
-    "note": "Audio de la lección completa Video de la lección completa de VOA, mismo programa.",
-    "video": "media/phrases/l07.mp4",
-    "blankWord": "chef"
+    "startSeconds": 158.8,
+    "note": "Pedido en el puesto de comida, lección 23. El video es solo esta frase.",
+    "video": "media/phrases/l07.mp4?v=3",
+    "blankWord": "beef"
   },
   {
     "id": "l08",

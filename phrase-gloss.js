@@ -5,7 +5,7 @@ window.PHRASE_GLOSS = {
   l04: { words: { pete: "Pete", want: "quiero", work: "ejercicio", out: "ejercicio", where: "dónde", gym: "gimnasio" }, vocab: [{ en: "work out", es: "hacer ejercicio" }, { en: "gym", es: "gimnasio" }] },
   l05: { words: { gym: "gimnasio", across: "enfrente", lounge: "salón", next: "al lado", mailroom: "sala de correo" }, vocab: [{ en: "across from", es: "enfrente de" }, { en: "lounge", es: "salón" }, { en: "next to", es: "al lado de" }, { en: "mailroom", es: "sala de correo" }] },
   l06: { words: { do: "verbo auxiliar", not: "no", have: "tengo", job: "trabajo" }, vocab: [{ en: "job", es: "trabajo" }] },
-  l07: { words: { can: "puedes", cook: "cocinar", chef: "chef", restaurant: "restaurante" }, vocab: [{ en: "cook", es: "cocinar" }, { en: "chef", es: "chef" }, { en: "restaurant", es: "restaurante" }] },
+  l07: { words: { okay: "bueno", ill: "me llevo", have: "llevo", the: "la", beef: "carne", then: "entonces" }, vocab: [{ en: "I'll have", es: "me llevo" }, { en: "beef", es: "carne" }] },
   l08: { words: { thanks: "gracias", coming: "venir", pete: "Pete" }, vocab: [{ en: "Thanks", es: "Gracias" }, { en: "coming in", es: "venir" }] },
   l09: { words: { need: "necesito", find: "saber", skills: "habilidades", job: "trabajo" }, vocab: [{ en: "find out", es: "saber" }, { en: "skills", es: "habilidades" }, { en: "job", es: "trabajo" }] },
   l10: { words: { hi: "hola", anna: "Anna", shopping: "compras", list: "lista" }, vocab: [{ en: "shopping list", es: "lista de compras" }] },
