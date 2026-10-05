@@ -652,9 +652,35 @@
     render();
   }
 
-  function stripeNotConnected() {
-    state.payNote = "El pago abre la página de Stripe. Todavía no hay un enlace de pago conectado, así que no se cobra nada.";
-    render();
+  var PAY_LINKS = {
+    month: "https://buy.stripe.com/test_8x2bIUgP9558fIKaJo3ZK00",
+    year: "https://buy.stripe.com/test_5kQ5kw1Uf8hkcwy3gW3ZK01"
+  };
+
+  function openStripe(which) {
+    var url = PAY_LINKS[which];
+    if (!url) {
+      state.payNote = "Elige mensual o anual.";
+      render();
+      return;
+    }
+    window.location.href = url;
+  }
+
+  function applyReturnFromStripe() {
+    var params = new URLSearchParams(window.location.search);
+    if (params.get("pago") !== "ok") return;
+    var plan = params.get("plan");
+    if (plan === "mensual") setPlan("month");
+    else if (plan === "anual") setPlan("year");
+    else return;
+    setSubscribed(true);
+    localStorage.removeItem(KEYS.postpone);
+    state.payNote = "";
+    state.screen = "home";
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
   }
 
   function pickPlan(which) {
@@ -665,17 +691,18 @@
       render();
       return;
     }
-    stripeNotConnected();
+    openStripe(which);
   }
 
   function addCard() {
     var st = premiumState(false);
     if (isSubscribed() || st.mode !== "expired") return;
-    if (!chosenPlan()) {
+    var plan = chosenPlan();
+    if (!plan) {
       openBilling();
       return;
     }
-    stripeNotConnected();
+    openStripe(plan);
   }
 
   function notNow() {
@@ -828,7 +855,7 @@
 
   function bannerFor(level) {
     if (level === "basico") return "Siempre gratis. Sin energía.";
-    if (isSubscribed()) return "Suscripción demo activa · energía ilimitada";
+    if (isSubscribed()) return "Suscripción activa · energía ilimitada";
     var st = premiumState(false);
     if (st.mode === "trial") return trialLabel(st.days);
     if (st.mode === "expired") return "Prueba terminada";
@@ -849,7 +876,7 @@
     });
     html += "</div>";
     if (isSubscribed()) {
-      html += "<p class=\"fine\">La suscripción demo está activa en este navegador. Energía ilimitada.</p>";
+      html += "<p class=\"fine\">La suscripción está activa en este navegador. Energía ilimitada.</p>";
       html += "<button class=\"btn wide\" id=\"cancel-sub\">Cancelar suscripción en este sitio</button>";
     }
     return html;
@@ -1176,6 +1203,7 @@
   }
 
   function boot() {
+    applyReturnFromStripe();
     energyNow();
     startTrialIfNeeded();
     var headerSub = $("open-billing");
