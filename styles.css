@@ -76,6 +76,8 @@ h1 { font-size: 2rem; margin: 0.15rem 0 0.4rem; letter-spacing: -0.045em; font-w
 .btn.lime { border-color: rgba(31, 138, 76, 0.45); color: var(--lime); }
 .btn.on { outline: 2px solid var(--lime); }
 .btn.wide { width: 100%; }
+a.btn { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; box-sizing: border-box; }
+a.btn.wide { display: flex; }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 .card, .panel, .plan, .vocab-card, details.more {
   background: #fff;

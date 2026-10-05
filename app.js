@@ -685,12 +685,6 @@
 
   function pickPlan(which) {
     setPlan(which);
-    var st = premiumState(false);
-    if (isSubscribed() || st.mode !== "expired") {
-      state.payNote = "";
-      render();
-      return;
-    }
     openStripe(which);
   }
 
@@ -886,8 +880,8 @@
     var st = premiumState(false);
     var picked = chosenPlan();
     var html = "<div class=\"stack\">";
-    html += "<button type=\"button\" class=\"btn wide" + (picked === "month" ? " on" : "") + "\" id=\"plan-month\">Mensual · 7 dólares</button>";
-    html += "<button type=\"button\" class=\"btn wide" + (picked === "year" ? " on" : "") + "\" id=\"plan-year\">Anual · 70 dólares</button>";
+    html += "<a class=\"btn wide" + (picked === "month" ? " on" : "") + "\" id=\"plan-month\" href=\"" + PAY_LINKS.month + "\">Mensual · 7 dólares</a>";
+    html += "<a class=\"btn wide" + (picked === "year" ? " on" : "") + "\" id=\"plan-year\" href=\"" + PAY_LINKS.year + "\">Anual · 70 dólares</a>";
     html += "</div>";
     html += "<p class=\"fine\">Unos 17% menos que pagar cada mes.</p>";
     if (!isSubscribed() && st.mode === "trial") {
