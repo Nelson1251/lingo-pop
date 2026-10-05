@@ -22,14 +22,15 @@
     intermedio: { label: "Intermedio", blurb: "Frases un poco más largas." },
     avanzado: { label: "Avanzado", blurb: "Frases más largas." }
   };
-  var THEME_ORDER = ["saludos", "restaurante", "ciudad", "compras", "gimnasio", "trabajo"];
+  var THEME_ORDER = ["saludos", "restaurante", "ciudad", "compras", "gimnasio", "trabajo", "kids"];
   var THEMES = {
     saludos: { label: "Saludos", blurb: "Decir hola y cómo estás." },
     restaurante: { label: "Restaurante", blurb: "Pedir comida." },
     ciudad: { label: "La ciudad", blurb: "Washington, calles y el apartamento." },
     compras: { label: "Compras", blurb: "La lista y los ingredientes." },
     gimnasio: { label: "El gimnasio", blurb: "Dónde queda y cómo llegar." },
-    trabajo: { label: "Trabajo", blurb: "Entrevista, oficina y el noticiero." }
+    trabajo: { label: "Trabajo", blurb: "Entrevista, oficina y el noticiero." },
+    kids: { label: "Kids", blurb: "Frases de Anna, para niños." }
   };
   var CATS = {
     all: "Todas",
@@ -224,6 +225,8 @@
     "l21", "l05", "l22", "l19", "l20", "l14", "l09"
   ];
   function clipSeq(id) {
+    var k = /^k0*(\d+)$/.exec(id || "");
+    if (k) return Number(k[1]);
     var i = CLIP_SEQ.indexOf(id);
     return i < 0 ? 999 : i;
   }
@@ -489,10 +492,16 @@
 
 
   function isCorePhrase(clip) {
-    var m = /^l0*(\d+)$/.exec(clip && clip.id || "");
-    if (!m) return false;
-    var n = Number(m[1]);
-    return n >= 1 && n <= 24;
+    var id = clip && clip.id || "";
+    var m = /^l0*(\d+)$/.exec(id);
+    if (m) {
+      var n = Number(m[1]);
+      return n >= 1 && n <= 24;
+    }
+    var k = /^k0*(\d+)$/.exec(id);
+    if (!k) return false;
+    var kn = Number(k[1]);
+    return kn >= 1 && kn <= 40;
   }
 
   function glossKey(tok) {
@@ -1202,7 +1211,7 @@
     startTrialIfNeeded();
     var headerSub = $("open-billing");
     if (headerSub) headerSub.addEventListener("click", openBilling);
-    fetch("clips.json?v=11")
+    fetch("clips.json?v=12")
       .then(function (res) {
         if (!res.ok) throw new Error("clips");
         return res.json();
