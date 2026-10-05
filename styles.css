@@ -111,6 +111,12 @@ a.btn.wide { display: flex; }
 .home h1, .home .lead, .home .fine, .home .text-link { color: #f7fffb; }
 .home .warn { color: #ffd7d4; }
 .home .level-btn, .home .btn { color: var(--text); }
+.home .level-btn {
+  background: linear-gradient(180deg, #fff1e4 0%, #ffc48a 100%);
+  border-color: #e8a066;
+  box-shadow: 0 10px 22px rgba(80, 36, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+.home .level-btn span { color: #4a3728; }
 .stage {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 300px;
