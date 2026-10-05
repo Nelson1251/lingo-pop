@@ -1059,7 +1059,7 @@
 
   function boot() {
     energyNow();
-    fetch("clips.json?v=10")
+    fetch("clips.json?v=11")
       .then(function (res) {
         if (!res.ok) throw new Error("clips");
         return res.json();

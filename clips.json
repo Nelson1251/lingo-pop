@@ -183,17 +183,17 @@
   },
   {
     "id": "l14",
-    "en": "I'll take a medium tea and a toasted whole wheat bagel with vegetable spread.",
-    "es": "Me llevo un té mediano y un bagel de trigo integral tostado con untado de verduras.",
+    "en": "We can buy dessert. I'll buy dessert.",
+    "es": "Podemos comprar postre. Yo compro el postre.",
     "category": "restaurante",
     "level": "avanzado",
-    "lessonPage": "https://learningenglish.voanews.com/a/how-to-order-at-an-american-restaurant/4745533.html",
-    "audio": "media/phrases/l14-order.mp3",
+    "lessonPage": "https://learningenglish.voanews.com/a/lets-learn-english-lesson-23-what-do-you-want/3413753.html",
+    "audio": "media/lesson-23.mp3",
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
-    "startSeconds": null,
-    "note": "Pedido en un mostrador. Esta lección de VOA solo tiene audio, no video.",
-    "video": "",
-    "blankWord": "bagel"
+    "startSeconds": 279.7,
+    "note": "Pedido de postre en los food trucks, lección 23, con video.",
+    "video": "media/phrases/l14.mp4?v=4",
+    "blankWord": "dessert"
   },
   {
     "id": "l15",
