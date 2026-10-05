@@ -10,7 +10,9 @@
     energy: "lingo-pop-energy",
     energyUpdated: "lingo-pop-energy-updated",
     streak: "lingo-pop-streak",
-    openPhrase: "lingo-pop-open-phrase"
+    openPhrase: "lingo-pop-open-phrase",
+    plan: "lingo-pop-plan",
+    postpone: "lingo-pop-postponed"
   };
   var TRIAL_MS = 7 * 24 * 60 * 60 * 1000;
   var HOUR_MS = 60 * 60 * 1000;
@@ -60,7 +62,9 @@
     blankTries: {},
     blankSolved: {},
     blankMsg: {},
-    order: null
+    order: null,
+    payNote: "",
+    billingBack: null
   };
 
   function $(id) { return document.getElementById(id); }
@@ -600,15 +604,105 @@
     }
   }
 
+  function chosenPlan() {
+    var p = localStorage.getItem(KEYS.plan);
+    if (p === "month" || p === "year") return p;
+    return "";
+  }
+
+  function setPlan(p) {
+    localStorage.setItem(KEYS.plan, p);
+  }
+
+  function openBilling() {
+    if (state.screen !== "billing") {
+      state.billingBack = {
+        screen: state.screen,
+        theme: state.theme,
+        level: state.level,
+        index: state.index
+      };
+    }
+    stopAudio();
+    state.playWithVideo = false;
+    state.payNote = "";
+    state.screen = "billing";
+    render();
+  }
+
+  function leaveBilling() {
+    var back = state.billingBack || { screen: "home" };
+    state.payNote = "";
+    state.screen = back.screen || "home";
+    state.theme = back.theme || null;
+    state.level = back.level || null;
+    state.index = back.index || 0;
+    if (!isSubscribed() && premiumState(false).mode === "expired" && state.screen === "practice") {
+      state.screen = "locked";
+      state.theme = null;
+      state.level = null;
+      state.playWithVideo = false;
+    }
+    if (state.screen === "home" || state.screen === "locked") {
+      state.theme = null;
+      state.level = null;
+      state.playWithVideo = false;
+    }
+    if (state.screen === "practice") state.playWithVideo = true;
+    render();
+  }
+
+  function stripeNotConnected() {
+    state.payNote = "El pago abre la página de Stripe. Todavía no hay un enlace de pago conectado, así que no se cobra nada.";
+    render();
+  }
+
+  function pickPlan(which) {
+    setPlan(which);
+    var st = premiumState(false);
+    if (isSubscribed() || st.mode !== "expired") {
+      state.payNote = "";
+      render();
+      return;
+    }
+    stripeNotConnected();
+  }
+
+  function addCard() {
+    var st = premiumState(false);
+    if (isSubscribed() || st.mode !== "expired") return;
+    if (!chosenPlan()) {
+      openBilling();
+      return;
+    }
+    stripeNotConnected();
+  }
+
+  function notNow() {
+    localStorage.setItem(KEYS.postpone, "1");
+    state.payNote = "";
+    goHome();
+  }
+
   function openTheme(theme) {
+    stopAudio();
+    state.checkout = false;
+    state.status = "";
+    state.homeNote = "";
+    state.payNote = "";
+    var st = premiumState(false);
+    if (!isSubscribed() && st.mode === "expired") {
+      state.theme = null;
+      state.level = null;
+      state.playWithVideo = false;
+      state.screen = "locked";
+      render();
+      return;
+    }
     state.theme = theme;
     state.level = null;
     state.index = 0;
     state.category = "all";
-    state.checkout = false;
-    state.status = "";
-    state.homeNote = "";
-    stopAudio();
     state.screen = "practice";
     state.playWithVideo = true;
     render();
@@ -630,7 +724,7 @@
     }
     var st = premiumState(true);
     if (st.mode === "expired") {
-      state.screen = "gate";
+      state.screen = "locked";
       render();
       return;
     }
@@ -662,21 +756,12 @@
     render();
   }
 
-  function simulateSub() {
-    setSubscribed(true);
-    state.checkout = false;
-    state.screen = "practice";
-    state.playWithVideo = true;
-    state.status = "Suscripción demo activa. Energía ilimitada. No se cobró nada.";
-    render();
-  }
-
   function cancelSub() {
     setSubscribed(false);
     state.status = "Suscripción demo cancelada en este sitio. Los puntos no cambian.";
     if (state.level && state.level !== "basico") {
       var st = premiumState(false);
-      if (st.mode === "expired") state.screen = "gate";
+      if (st.mode === "expired") state.screen = "locked";
     }
     render();
   }
@@ -753,6 +838,9 @@
   function renderHome() {
     var html = "<h1>Elige un tema</h1><p class=\"lead\">Mira el video, lee el inglés arriba y el español abajo, y pasa a la siguiente frase.</p>";
     if (state.homeNote) html += "<p class=\"warn\">" + esc(state.homeNote) + "</p>";
+    if (!isSubscribed() && localStorage.getItem(KEYS.postpone) === "1") {
+      html += "<p class=\"home-sub\"><button type=\"button\" class=\"text-link\" id=\"home-subscribe\">Suscribirme</button></p>";
+    }
     html += "<div class=\"stack\">";
     THEME_ORDER.forEach(function (key) {
       var n = state.clips.filter(function (c) { return c.category === key && isCorePhrase(c); }).length;
@@ -767,25 +855,29 @@
     return html;
   }
 
-  function renderGate() {
-    var label = LEVELS[state.level].label;
-    var html = "<button class=\"back\" id=\"go-home\">← Niveles</button>";
-    html += "<h1>" + esc(label) + "</h1>";
-    html += "<p class=\"lead\">La prueba gratis de 7 días terminó. Elige un plan para seguir en este nivel. Básico sigue gratis.</p>";
-    html += "<div class=\"plan featured\"><b>Anual</b><p class=\"fine\">Recomendado · $49 al año</p></div>";
-    html += "<div class=\"plan\"><b>Mensual</b><p class=\"fine\">$7 al mes</p></div>";
-    html += "<div class=\"stack\">";
-    html += "<button class=\"btn primary wide\" id=\"pay\">Continuar al pago</button>";
-    html += "<button class=\"btn lime wide\" id=\"sim\">Simular suscripción activa (sin cobro)</button>";
-    html += "<button class=\"btn wide\" id=\"cancel-sub\">Cancelar suscripción en este sitio</button>";
-    html += "<button class=\"btn wide\" id=\"to-basico\">Volver a Básico</button>";
+  function renderBilling() {
+    var st = premiumState(false);
+    var picked = chosenPlan();
+    var html = "<div class=\"stack\">";
+    html += "<button type=\"button\" class=\"btn wide" + (picked === "month" ? " on" : "") + "\" id=\"plan-month\">Mensual · 7 dólares</button>";
+    html += "<button type=\"button\" class=\"btn wide" + (picked === "year" ? " on" : "") + "\" id=\"plan-year\">Anual · 70 dólares</button>";
     html += "</div>";
-    html += "<p class=\"fine\">Si la app sale en iPhone, el pago será por la App Store. En Android, por Google Play. Esta versión web no usa esas tiendas.</p>";
-    if (state.checkout) {
-      html += "<div class=\"panel\"><p><strong>Modo prueba. No hay cuenta de Stripe conectada, así que no se cobra nada.</strong></p>";
-      html += "<p class=\"fine\">Un pago real abriría Stripe Checkout (tarjeta y Apple Pay en navegadores compatibles en EE.UU.). La suscripción se administraría y se cancelaría en este sitio, no en Apple ni en Google.</p>";
-      html += "<p class=\"fine\">Demo: no se hace ningún cobro. No pedimos número de tarjeta.</p></div>";
+    html += "<p class=\"fine\">Unos 17% menos que pagar cada mes.</p>";
+    if (!isSubscribed() && st.mode === "trial") {
+      html += "<p class=\"lead\">La tarjeta se pide cuando termine la prueba. Hasta entonces no se cobra nada.</p>";
     }
+    html += "<button type=\"button\" class=\"btn\" id=\"billing-back\">Volver</button>";
+    if (state.payNote) html += "<p class=\"fine\">" + esc(state.payNote) + "</p>";
+    return html;
+  }
+
+  function renderLocked() {
+    var html = "<p class=\"lead\">Tu prueba de 7 días terminó. Sigue con todos los temas por 7 dólares al mes o 70 al año.</p>";
+    html += "<div class=\"stack\">";
+    html += "<button type=\"button\" class=\"btn wide\" id=\"add-card\">Agregar tarjeta</button>";
+    html += "<button type=\"button\" class=\"btn wide\" id=\"not-now\">Ahora no</button>";
+    html += "</div>";
+    if (state.payNote) html += "<p class=\"fine\">" + esc(state.payNote) + "</p>";
     return html;
   }
 
@@ -894,14 +986,34 @@
     return html;
   }
 
+  function renderBanner() {
+    var el = document.getElementById("trial-banner");
+    if (!el) return;
+    var st = premiumState(false);
+    if (!isSubscribed() && st.mode === "trial" && st.days === 1) {
+      el.hidden = false;
+      el.innerHTML = "<p>Mañana termina tu prueba. Al terminar te pediremos la tarjeta. Son 7 dólares al mes o 70 al año, con todos los temas.</p>"
+        + "<button type=\"button\" class=\"btn\" id=\"banner-plan\">Ver el plan</button>";
+      var btn = document.getElementById("banner-plan");
+      if (btn) btn.addEventListener("click", openBilling);
+    } else {
+      el.hidden = true;
+      el.innerHTML = "";
+    }
+  }
+
   function render() {
     renderPoints("");
+    renderBanner();
     var view = $("view");
     if (!state.clips.length) {
       view.innerHTML = "<p class=\"lead\">No se pudieron cargar las frases. Abre esta carpeta con un servidor local, no con file://.</p>";
       return;
     }
-    var html = state.screen === "home" ? renderHome() : (state.screen === "gate" ? renderGate() : renderPractice());
+    var html = renderHome();
+    if (state.screen === "billing") html = renderBilling();
+    else if (state.screen === "locked") html = renderLocked();
+    else if (state.screen !== "home") html = renderPractice();
     view.innerHTML = html;
     bind();
     startWithVideoIfNeeded();
@@ -950,14 +1062,20 @@
     });
     var home = $("go-home");
     if (home) home.addEventListener("click", goHome);
-    var pay = $("pay");
-    if (pay) pay.addEventListener("click", function () { state.checkout = true; render(); });
-    var sim = $("sim");
-    if (sim) sim.addEventListener("click", simulateSub);
+    var homeSub = $("home-subscribe");
+    if (homeSub) homeSub.addEventListener("click", openBilling);
+    var planMonth = $("plan-month");
+    if (planMonth) planMonth.addEventListener("click", function () { pickPlan("month"); });
+    var planYear = $("plan-year");
+    if (planYear) planYear.addEventListener("click", function () { pickPlan("year"); });
+    var billingBack = $("billing-back");
+    if (billingBack) billingBack.addEventListener("click", leaveBilling);
+    var addCardBtn = $("add-card");
+    if (addCardBtn) addCardBtn.addEventListener("click", addCard);
+    var later = $("not-now");
+    if (later) later.addEventListener("click", notNow);
     var cancel = $("cancel-sub");
     if (cancel) cancel.addEventListener("click", cancelSub);
-    var toBasico = $("to-basico");
-    if (toBasico) toBasico.addEventListener("click", function () { openLevel("basico"); });
     document.querySelectorAll("[data-dir]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         state.direction = btn.getAttribute("data-dir");
@@ -1059,6 +1177,9 @@
 
   function boot() {
     energyNow();
+    startTrialIfNeeded();
+    var headerSub = $("open-billing");
+    if (headerSub) headerSub.addEventListener("click", openBilling);
     fetch("clips.json?v=11")
       .then(function (res) {
         if (!res.ok) throw new Error("clips");
@@ -1074,17 +1195,18 @@
     renderPoints("");
     setInterval(function () {
       energyNow();
-      if (!state.theme && state.screen === "practice" && state.level && state.level !== "basico" && !isSubscribed()) {
-        var st = premiumState(false);
-        if (st.mode === "expired") {
-          state.screen = "gate";
-          state.checkout = false;
-          stopAudio();
-          render();
-          return;
-        }
+      var st = premiumState(false);
+      if (!isSubscribed() && st.mode === "expired" && state.screen === "practice") {
+        stopAudio();
+        state.playWithVideo = false;
+        state.theme = null;
+        state.level = null;
+        state.screen = "locked";
         render();
+        return;
       }
+      if (state.screen === "billing" || state.screen === "home" || state.screen === "locked") render();
+      else renderBanner();
     }, 30000);
   }
 

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#ffffff" />
 <title>Lingo Pop</title>
-<link rel="stylesheet" href="styles.css?v=5" />
+<link rel="stylesheet" href="styles.css?v=6" />
 </head>
 <body>
 <div class="app">
@@ -14,14 +14,18 @@
       <p class="brand">Lingo <span>Pop</span></p>
       <p class="tag">Inglés en frases reales</p>
     </div>
-    <p class="points" id="points" aria-live="polite">Puntos: 0</p>
+    <div class="top-actions">
+      <button type="button" class="btn" id="open-billing">Suscribirme</button>
+      <p class="points" id="points" aria-live="polite">Puntos: 0</p>
+    </div>
   </header>
+  <div id="trial-banner" class="trial-banner" hidden></div>
   <main id="view"></main>
   <footer class="credit">Audio: VOA Learning English (learningenglish.voanews.com). Dominio público.</footer>
 </div>
 <audio id="voa" preload="none"></audio>
 <audio id="take" preload="none"></audio>
 <script src="phrase-gloss.js?v=7"></script>
-<script src="app.js?v=12"></script>
+<script src="app.js?v=13"></script>
 </body>
 </html>

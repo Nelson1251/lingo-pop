@@ -20,6 +20,12 @@ body {
 }
 .app { max-width: 1100px; margin: 0 auto; padding: 1.1rem 1.2rem 2.6rem; }
 .top { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; margin-bottom: 1.1rem; }
+.top-actions { display: flex; align-items: center; gap: 0.5rem; }
+.trial-banner { background: var(--soft); border: 1px solid var(--line); border-radius: 18px; padding: 0.9rem 1rem; margin-bottom: 1rem; }
+.trial-banner p { margin: 0 0 0.65rem; line-height: 1.45; }
+.trial-banner[hidden] { display: none; }
+.home-sub { margin: 0 0 1rem; }
+.text-link { background: none; border: none; padding: 0; color: var(--text); font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
 .brand {
   margin: 0;
   font-size: 1.7rem;
