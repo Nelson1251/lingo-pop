@@ -22,7 +22,7 @@
     intermedio: { label: "Intermedio", blurb: "Frases un poco más largas." },
     avanzado: { label: "Avanzado", blurb: "Frases más largas." }
   };
-  var THEME_ORDER = ["saludos", "restaurante", "ciudad", "compras", "gimnasio", "trabajo", "kids"];
+  var THEME_ORDER = ["saludos", "restaurante", "ciudad", "compras", "gimnasio", "trabajo", "escuela", "kids"];
   var THEMES = {
     saludos: { label: "Saludos", blurb: "Decir hola y cómo estás." },
     restaurante: { label: "Restaurante", blurb: "Pedir comida." },
@@ -30,6 +30,7 @@
     compras: { label: "Compras", blurb: "La lista y los ingredientes." },
     gimnasio: { label: "El gimnasio", blurb: "Dónde queda y cómo llegar." },
     trabajo: { label: "Trabajo", blurb: "Entrevista, oficina y el noticiero." },
+    escuela: { label: "Escuela", blurb: "Clases, estudios y la escuela." },
     kids: { label: "Kids", blurb: "Frases de Anna, para niños." }
   };
   var CATS = {
@@ -496,12 +497,14 @@
     var m = /^l0*(\d+)$/.exec(id);
     if (m) {
       var n = Number(m[1]);
-      return n >= 1 && n <= 24;
+      if (n >= 1 && n <= 24) return true;
     }
     var k = /^k0*(\d+)$/.exec(id);
-    if (!k) return false;
-    var kn = Number(k[1]);
-    return kn >= 1 && kn <= 40;
+    if (k) {
+      var kn = Number(k[1]);
+      if (kn >= 1 && kn <= 40) return true;
+    }
+    return /^s\d{2,}$/.test(id);
   }
 
   function glossKey(tok) {
