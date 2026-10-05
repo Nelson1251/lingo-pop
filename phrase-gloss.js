@@ -12,7 +12,7 @@ window.PHRASE_GLOSS = {
   l11: { words: { anna: "Anna", please: "por favor", buy: "compra", ingredients: "ingredientes", list: "lista" }, vocab: [{ en: "buy", es: "comprar" }, { en: "ingredients", es: "ingredientes" }, { en: "list", es: "lista" }] },
   l12: { words: { hello: "hola", want: "quiero", chicken: "pollo", dish: "plato" }, vocab: [{ en: "chicken dish", es: "plato de pollo" }] },
   l13: { words: { excuse: "disculpe", shrimp: "camarón" }, vocab: [{ en: "Excuse me", es: "Disculpe" }, { en: "shrimp", es: "camarón" }] },
-  l14: { words: { im: "tengo / estoy", hungry: "hambre", when: "cuando", only: "solo", eat: "comer", junk: "chatarra", food: "comida" }, vocab: [{ en: "hungry", es: "hambre" }, { en: "junk food", es: "comida chatarra" }] },
+  l14: { words: { ill: "me llevo", take: "llevo", medium: "mediano", tea: "té", toasted: "tostado", whole: "integral", wheat: "trigo", bagel: "bagel", vegetable: "verduras", spread: "untado" }, vocab: [{ en: "I'll take", es: "me llevo" }, { en: "medium", es: "mediano" }, { en: "bagel", es: "bagel" }, { en: "vegetable spread", es: "untado de verduras" }] },
   l15: { words: { hey: "oye", tastes: "sabe", good: "bien" }, vocab: [{ en: "tastes good", es: "sabe bien" }] },
   l16: { words: { hello: "hola", welcome: "bienvenidos", news: "noticias" }, vocab: [{ en: "welcome", es: "bienvenidos" }, { en: "The News", es: "Las Noticias" }] },
   l17: { words: { pete: "Pete", new: "nueva", city: "ciudad", big: "grande" }, vocab: [{ en: "new", es: "nueva" }, { en: "city", es: "ciudad" }, { en: "big", es: "grande" }] },

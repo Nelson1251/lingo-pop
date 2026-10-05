@@ -183,17 +183,17 @@
   },
   {
     "id": "l14",
-    "en": "I'm hungry. When I'm hungry, I only want to eat junk food!",
-    "es": "Tengo hambre. Cuando tengo hambre, solo quiero comida chatarra.",
+    "en": "I'll take a medium tea and a toasted whole wheat bagel with vegetable spread.",
+    "es": "Me llevo un té mediano y un bagel de trigo integral tostado con untado de verduras.",
     "category": "restaurante",
     "level": "avanzado",
-    "lessonPage": "https://learningenglish.voanews.com/a/lets-learn-english-lesson-44-making-healthy-choices/3688552.html",
-    "audio": "media/lesson-44.mp3",
+    "lessonPage": "https://learningenglish.voanews.com/a/how-to-order-at-an-american-restaurant/4745533.html",
+    "audio": "media/phrases/l14-order.mp3",
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": null,
-    "note": "Audio de la lección completa Video de la lección completa de VOA, mismo programa.",
-    "video": "media/phrases/l14.mp4",
-    "blankWord": "hungry"
+    "note": "Pedido en un mostrador. Esta lección de VOA solo tiene audio, no video.",
+    "video": "",
+    "blankWord": "bagel"
   },
   {
     "id": "l15",
