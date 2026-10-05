@@ -101,6 +101,16 @@ a.btn.wide { display: flex; }
 .energy { font-weight: 700; color: var(--text); margin: 0.35rem 0; }
 .episode-kicker { margin: 0 0 0.55rem; color: var(--muted); font-size: 0.88rem; }
 
+
+.home {
+  background: #0b6b45;
+  color: #f7fffb;
+  border-radius: 28px;
+  padding: 1.15rem 1rem 1.25rem;
+}
+.home h1, .home .lead, .home .fine, .home .text-link { color: #f7fffb; }
+.home .warn { color: #ffd7d4; }
+.home .level-btn, .home .btn { color: var(--text); }
 .stage {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 300px;

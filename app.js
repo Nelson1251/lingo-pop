@@ -869,7 +869,7 @@
   }
 
   function renderHome() {
-    var html = "<h1>Elige un tema</h1><p class=\"lead\">Mira el video, lee el inglés arriba y el español abajo, y pasa a la siguiente frase.</p>";
+    var html = "<div class=\"home\"><h1>Elige un tema</h1><p class=\"lead\">Mira el video, lee el inglés arriba y el español abajo, y pasa a la siguiente frase.</p>";
     if (state.homeNote) html += "<p class=\"warn\">" + esc(state.homeNote) + "</p>";
     if (!isSubscribed() && localStorage.getItem(KEYS.postpone) === "1") {
       html += "<p class=\"home-sub\"><button type=\"button\" class=\"text-link\" id=\"home-subscribe\">Suscribirme</button></p>";
@@ -885,6 +885,7 @@
       html += "<p class=\"fine\">La suscripción está activa en este navegador. Energía ilimitada.</p>";
       html += "<button class=\"btn wide\" id=\"cancel-sub\">Cancelar suscripción en este sitio</button>";
     }
+    html += "</div>";
     return html;
   }
 
