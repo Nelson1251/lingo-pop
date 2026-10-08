@@ -999,7 +999,6 @@
     html += "<button class=\"btn wide\" id=\"tts\">Escuchar con voz del navegador</button>";
     html += "<button class=\"btn wide\" id=\"rec\">" + (state.recording ? "Detener" : "Grabar") + "</button>";
     html += "<button class=\"btn wide\" id=\"play-take\"" + (state.takeUrl ? "" : " disabled") + ">Escuchar mi toma</button>";
-    html += "<button class=\"btn wide" + (r.repeated ? " on" : "") + "\" id=\"correct\">" + (r.repeated ? "Ya lo repetí" : "La dije bien") + "</button>";
     html += "<button class=\"btn lime wide" + (r.dominada ? " on" : "") + "\" id=\"dominada\">" + (r.dominada ? "Dominada" : "Marcar dominada") + "</button>";
     html += "</div>";
     html += "<p class=\"fine\"><a class=\"link\" href=\"" + esc(clip.lessonPage) + "\" target=\"_blank\" rel=\"noopener\">Página de la lección</a></p>";
@@ -1199,8 +1198,6 @@
       var a = $("take");
       if (state.takeUrl) { a.src = state.takeUrl; a.play(); }
     });
-    var correct = $("correct");
-    if (correct) correct.addEventListener("click", function () { markCorrect(clip); });
     var more = $("practice-more");
     if (more) more.addEventListener("toggle", function () { state.practiceOpen = more.open; });
     var dom = $("dominada");
