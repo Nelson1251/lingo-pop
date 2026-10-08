@@ -1048,6 +1048,7 @@
     if (state.screen === "billing") html = renderBilling();
     else if (state.screen === "locked") html = renderLocked();
     else if (state.screen !== "home") html = renderPractice();
+    document.body.classList.toggle("on-home", state.screen === "home");
     view.innerHTML = html;
     bind();
     startWithVideoIfNeeded();

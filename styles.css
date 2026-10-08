@@ -102,21 +102,39 @@ a.btn.wide { display: flex; }
 .episode-kicker { margin: 0 0 0.55rem; color: var(--muted); font-size: 0.88rem; }
 
 
+/* Theme picker palette, chosen for study: calm sage for focus, warm paper to cut glare,
+   blue for concentration, a small yellow for reward, soft orange cards to invite a tap. */
+body.on-home { background: #f8f6f0; }
+body.on-home .tag { color: #4b5d68; }
+body.on-home #open-billing { background: #eef5fc; border-color: #b9d1ec; color: #1d4f8c; font-weight: 700; }
+body.on-home .points { background: #fff5d1; border-color: #ecd486; color: #5c4600; }
+body.on-home .credit { color: #5f6b66; }
 .home {
-  background: #477f66;
-  color: #f7fffb;
+  background: #dcebe1;
+  color: #1f3a2e;
+  border: 1px solid #c4dccc;
   border-radius: 28px;
   padding: 1.15rem 1rem 1.25rem;
 }
-.home h1, .home .lead, .home .fine, .home .text-link { color: #f7fffb; }
-.home .warn { color: #ffd7d4; }
+.home h1 { color: #1f3a2e; }
+.home .lead, .home .fine { color: #3e5a4c; }
+.home .text-link { color: #1d4f8c; }
+.home .warn { color: #b42318; }
 .home .level-btn, .home .btn { color: var(--text); }
 .home .level-btn {
   background: linear-gradient(180deg, #fff1e4 0%, #ffc48a 100%);
   border-color: #e8a066;
   box-shadow: 0 10px 22px rgba(80, 36, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
+.home .level-btn strong { color: #2a1d12; }
 .home .level-btn span { color: #4a3728; }
+.home .level-btn:hover, .home .level-btn:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px rgba(80, 36, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  outline: 2px solid #1d4f8c;
+  outline-offset: 2px;
+}
 .stage {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 300px;
