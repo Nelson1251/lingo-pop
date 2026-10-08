@@ -66,7 +66,8 @@
     blankMsg: {},
     order: null,
     payNote: "",
-    billingBack: null
+    billingBack: null,
+    practiceOpen: false
   };
 
   function $(id) { return document.getElementById(id); }
@@ -981,7 +982,7 @@
     if (core) html += vocabCardHtml(clip);
     html += "<p class=\"fine\">Toca una palabra del inglés para ver qué significa. El video es solo esta frase.</p>";
     ensureOrder(clip);
-    html += "<details class=\"more\"><summary>Practicar esta frase</summary>";
+    html += "<details class=\"more\" id=\"practice-more\"" + (state.practiceOpen ? " open" : "") + "><summary>Practicar esta frase</summary>";
     html += "<section class=\"exercise\" id=\"order-box\">";
     html += "<h2>Ordena la frase</h2>";
     html += "<div class=\"word-row\" id=\"order-built\">" + wordButtons(state.order.built, "built") + "</div>";
@@ -999,7 +1000,6 @@
     html += "<button class=\"btn wide\" id=\"rec\">" + (state.recording ? "Detener" : "Grabar") + "</button>";
     html += "<button class=\"btn wide\" id=\"play-take\"" + (state.takeUrl ? "" : " disabled") + ">Escuchar mi toma</button>";
     html += "<button class=\"btn wide" + (r.repeated ? " on" : "") + "\" id=\"correct\">" + (r.repeated ? "Ya lo repetí" : "La dije bien") + "</button>";
-    html += "<button class=\"btn wide\" id=\"wrong\">Me equivoqué</button>";
     html += "<button class=\"btn lime wide" + (r.dominada ? " on" : "") + "\" id=\"dominada\">" + (r.dominada ? "Dominada" : "Marcar dominada") + "</button>";
     html += "</div>";
     html += "<p class=\"fine\"><a class=\"link\" href=\"" + esc(clip.lessonPage) + "\" target=\"_blank\" rel=\"noopener\">Página de la lección</a></p>";
@@ -1201,8 +1201,8 @@
     });
     var correct = $("correct");
     if (correct) correct.addEventListener("click", function () { markCorrect(clip); });
-    var wrong = $("wrong");
-    if (wrong) wrong.addEventListener("click", markWrong);
+    var more = $("practice-more");
+    if (more) more.addEventListener("toggle", function () { state.practiceOpen = more.open; });
     var dom = $("dominada");
     if (dom) dom.addEventListener("click", function () { toggleDominada(clip); });
     var prev = $("prev");
