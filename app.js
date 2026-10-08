@@ -1049,6 +1049,7 @@
     else if (state.screen === "locked") html = renderLocked();
     else if (state.screen !== "home") html = renderPractice();
     document.body.classList.toggle("on-home", state.screen === "home");
+    document.body.classList.toggle("themed", state.screen !== "billing" && state.screen !== "locked");
     view.innerHTML = html;
     bind();
     startWithVideoIfNeeded();
