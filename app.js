@@ -22,7 +22,7 @@
     intermedio: { label: "Intermedio", blurb: "Frases un poco más largas." },
     avanzado: { label: "Avanzado", blurb: "Frases más largas." }
   };
-  var THEME_ORDER = ["saludos", "restaurante", "ciudad", "compras", "gimnasio", "trabajo", "escuela", "gramatica", "general", "kids"];
+  var THEME_ORDER = ["saludos", "restaurante", "ciudad", "compras", "gimnasio", "trabajo", "gramatica", "general", "kids"];
   var THEMES = {
     saludos: { label: "Saludos", blurb: "Decir hola y cómo estás." },
     restaurante: { label: "Restaurante", blurb: "Pedir comida." },
@@ -30,7 +30,6 @@
     compras: { label: "Compras", blurb: "La lista y los ingredientes." },
     gimnasio: { label: "El gimnasio", blurb: "Dónde queda y cómo llegar." },
     trabajo: { label: "Trabajo", blurb: "Entrevista, oficina y el noticiero." },
-    escuela: { label: "Escuela", blurb: "Clases, estudios y la escuela." },
     gramatica: { label: "Gramática", blurb: "Gramática y lenguaje, de VOA Learning English." },
     general: { label: "Frases generales", blurb: "Frases útiles de VOA Learning English." },
     kids: { label: "Kids", blurb: "Frases de Anna, para niños." }
