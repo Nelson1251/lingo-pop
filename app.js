@@ -700,6 +700,11 @@
 
   function pickPlan(which) {
     setPlan(which);
+    var st = premiumState(false);
+    if (!isSubscribed() && st.mode === "trial") {
+      render();
+      return;
+    }
     openStripe(which);
   }
 
@@ -896,12 +901,15 @@
     var st = premiumState(false);
     var picked = chosenPlan();
     var html = "<div class=\"stack\">";
-    html += "<a class=\"btn wide" + (picked === "month" ? " on" : "") + "\" id=\"plan-month\" href=\"" + PAY_LINKS.month + "\">Mensual · 7 dólares</a>";
-    html += "<a class=\"btn wide" + (picked === "year" ? " on" : "") + "\" id=\"plan-year\" href=\"" + PAY_LINKS.year + "\">Anual · 70 dólares</a>";
+    html += "<button type=\"button\" class=\"btn wide" + (picked === "month" ? " on" : "") + "\" id=\"plan-month\">Mensual · 7 dólares</button>";
+    html += "<button type=\"button\" class=\"btn wide" + (picked === "year" ? " on" : "") + "\" id=\"plan-year\">Anual · 70 dólares</button>";
     html += "</div>";
     html += "<p class=\"fine\">Unos 17% menos que pagar cada mes.</p>";
     if (!isSubscribed() && st.mode === "trial") {
       html += "<p class=\"lead\">La tarjeta se pide cuando termine la prueba. Hasta entonces no se cobra nada.</p>";
+    } else if (!isSubscribed() && st.mode === "expired") {
+      html += "<p class=\"lead\">Tu prueba terminó. Elige cómo seguir. Los siete temas entran en los dos precios.</p>";
+      html += "<button type=\"button\" class=\"btn wide\" id=\"add-card\">Agregar tarjeta</button>";
     }
     html += "<button type=\"button\" class=\"btn\" id=\"billing-back\">Volver</button>";
     if (state.payNote) html += "<p class=\"fine\">" + esc(state.payNote) + "</p>";
