@@ -130,7 +130,10 @@ body.themed .credit { color: #6a5546; }
 .home .lead, .home .fine { color: #3e5a4c; }
 .home .text-link { color: #1d4f8c; }
 .home .warn { color: #b42318; }
+.install-row { margin: 0 0 1rem; }
+.install-hint { margin: 0 0 1rem; color: #1d4f8c; font-size: 0.9rem; line-height: 1.4; }
 .home .level-btn, .home .btn { color: var(--text); }
+.home .install-btn { background: #eef5fc; border-color: #b9d1ec; color: #1d4f8c; font-weight: 700; }
 .home .level-btn {
   background: linear-gradient(180deg, #fff1e4 0%, #ffc48a 100%);
   border-color: #e8a066;

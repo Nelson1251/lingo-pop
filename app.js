@@ -876,8 +876,55 @@
     return "7 días de prueba la primera vez que entres";
   }
 
+  // Install as app (PWA). Chrome/Android/desktop: beforeinstallprompt. iPhone Safari: a short hint.
+  var installPrompt = null;
+  var installDone = false;
+  function isStandalone() {
+    return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true;
+  }
+  function isIosSafari() {
+    var ua = navigator.userAgent || "";
+    var ios = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    var otherBrowser = /CriOS|FxiOS|EdgiOS|OPiOS|GSA\//.test(ua);
+    return ios && /Safari/.test(ua) && !otherBrowser;
+  }
+  function renderInstall() {
+    if (installDone || isStandalone()) return "";
+    if (installPrompt) {
+      return "<p class=\"install-row\"><button type=\"button\" class=\"btn install-btn\" id=\"install-app\">Instalar</button></p>";
+    }
+    if (isIosSafari()) {
+      return "<p class=\"install-hint\">En iPhone: toca Compartir y luego Agregar a pantalla de inicio</p>";
+    }
+    return "";
+  }
+  function installApp() {
+    if (!installPrompt) return;
+    var p = installPrompt;
+    installPrompt = null;
+    p.prompt();
+    if (p.userChoice) {
+      p.userChoice.then(function (choice) {
+        if (choice && choice.outcome === "accepted") installDone = true;
+        if (state.screen === "home") render();
+      }).catch(function () {});
+    }
+    if (state.screen === "home") render();
+  }
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault();
+    installPrompt = e;
+    if (state.screen === "home" && state.clips.length) render();
+  });
+  window.addEventListener("appinstalled", function () {
+    installDone = true;
+    installPrompt = null;
+    if (state.screen === "home" && state.clips.length) render();
+  });
+
   function renderHome() {
     var html = "<div class=\"home\"><h1>Elige un tema</h1><p class=\"lead\">Mira el video, lee el inglés arriba y el español abajo, y pasa a la siguiente frase.</p>";
+    html += renderInstall();
     if (state.homeNote) html += "<p class=\"warn\">" + esc(state.homeNote) + "</p>";
     if (!isSubscribed() && localStorage.getItem(KEYS.postpone) === "1") {
       html += "<p class=\"home-sub\"><button type=\"button\" class=\"text-link\" id=\"home-subscribe\">Suscribirme</button></p>";
@@ -1109,6 +1156,8 @@
     if (home) home.addEventListener("click", goHome);
     var homeSub = $("home-subscribe");
     if (homeSub) homeSub.addEventListener("click", openBilling);
+    var installBtn = $("install-app");
+    if (installBtn) installBtn.addEventListener("click", installApp);
     var planMonth = $("plan-month");
     if (planMonth) planMonth.addEventListener("click", function () { pickPlan("month"); });
     var planYear = $("plan-year");
