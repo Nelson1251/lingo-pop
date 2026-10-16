@@ -668,8 +668,8 @@
   }
 
   var PAY_LINKS = {
-    month: "https://buy.stripe.com/test_8x2bIUgP9558fIKaJo3ZK00",
-    year: "https://buy.stripe.com/test_5kQ5kw1Uf8hkcwy3gW3ZK01"
+    month: "https://buy.stripe.com/8x2bIUgP9558fIKaJo3ZK00",
+    year: "https://buy.stripe.com/5kQ5kw1Uf8hkcwy3gW3ZK01"
   };
 
   function openStripe(which) {
