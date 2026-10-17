@@ -668,7 +668,7 @@
   }
 
   var PAY_LINKS = {
-    month: "https://buy.stripe.com/8x2bIUgP9558fIKaJo3ZK00",
+    month: "https://buy.stripe.com/8x28wIeH169c8gi8Bg3ZK02",
     year: "https://buy.stripe.com/5kQ5kw1Uf8hkcwy3gW3ZK01"
   };
 
