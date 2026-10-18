@@ -1,12 +1,12 @@
 /* Lingo Pop service worker: cache the app shell so it opens offline. */
-var CACHE = "lingo-pop-shell-v5";
+var CACHE = "lingo-pop-shell-v6";
 var SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=17",
-  "./app.js?v=26",
+  "./app.js?v=27",
   "./phrase-gloss.js?v=8",
-  "./clips.json?v=13",
+  "./clips.json?v=14",
   "./manifest.webmanifest",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
