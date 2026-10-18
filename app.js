@@ -317,6 +317,21 @@
     }
   }
 
+  var voaArm = null;
+  function armVoa(audio, clip) {
+    if (voaArm) { audio.removeEventListener("timeupdate", voaArm.tick); audio.removeEventListener("loadedmetadata", voaArm.seek); clearTimeout(voaArm.timer); }
+    var s = Number(clip.startSeconds), e = Number(clip.endSeconds), arm = { timer: null };
+    arm.seek = function () { var d = audio.duration; audio.currentTime = (isFinite(s) && s > 0 && !(isFinite(d) && s >= d)) ? s : 0; };
+    arm.tick = function () {
+      var left = e - audio.currentTime;
+      if (!(isFinite(e) && e > 0) || audio.paused || arm.timer || left > 0.3) return;
+      arm.timer = setTimeout(function () { arm.timer = null; if (!audio.paused && audio.currentTime >= e - 0.35) audio.pause(); }, Math.max(0, left * 1000));
+    };
+    voaArm = arm;
+    if (audio.readyState >= 1) arm.seek(); else audio.addEventListener("loadedmetadata", arm.seek, { once: true });
+    audio.addEventListener("timeupdate", arm.tick);
+  }
+
   function playVoa(clip, restart) {
     if (document.getElementById("clip-video")) {
       playClipVideo({ restart: !!restart });
@@ -328,8 +343,7 @@
     }
     var audio = $("voa");
     if (restart || !audio.src || audio.src.indexOf(clip.audio) === -1) audio.src = clip.audio;
-    if (clip.startSeconds != null) audio.currentTime = clip.startSeconds;
-    else if (restart) audio.currentTime = 0;
+    armVoa(audio, clip);
     audio.play().then(function () {
       markHeard(clip.id);
       setStatus("Audio de la escena corta.");
@@ -368,7 +382,8 @@
     var audio = $("voa");
     if (!clip.audio) return;
     var same = !!(audio.src && audio.src.indexOf(clip.audio) !== -1);
-    if (same && audio.currentTime > 0.05) {
+    var atEnd = clip.endSeconds != null && audio.currentTime >= clip.endSeconds - 0.1;
+    if (same && audio.currentTime > 0.05 && !atEnd) {
       audio.play().then(function () {
         markHeard(clip.id);
       }).catch(function () {
@@ -1279,7 +1294,7 @@
     startTrialIfNeeded();
     var headerSub = $("open-billing");
     if (headerSub) headerSub.addEventListener("click", openBilling);
-    fetch("clips.json?v=16")
+    fetch("clips.json?v=17")
       .then(function (res) {
         if (!res.ok) throw new Error("clips");
         return res.json();
