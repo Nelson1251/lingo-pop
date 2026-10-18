@@ -3,15 +3,17 @@
   --bg: #ffffff;
   --card: #ffffff;
   --text: #121212;
-  --muted: #5c6370;
+  --muted: #4b5160;
   --line: rgba(18, 18, 18, 0.1);
   --orange: #ff8243;
+  --orange-strong: #c2410c; /* burnt orange: white text on it is 5.18:1 */
   --cyan: #1f6feb;
-  --lime: #1f8a4c;
+  --lime: #1a7a43;
   --soft: #f6f7f9;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
+html { background: #ffe4cc; }
 body {
   min-height: 100vh;
   font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
@@ -72,7 +74,7 @@ h1 { font-size: 2rem; margin: 0.15rem 0 0.4rem; letter-spacing: -0.045em; font-w
   min-height: 46px;
   border-radius: 999px;
 }
-.btn.primary { background: var(--orange); border-color: transparent; color: #fff; font-weight: 800; }
+.btn.primary { background: var(--orange-strong); border-color: transparent; color: #fff; font-weight: 800; }
 .btn.lime { border-color: rgba(31, 138, 76, 0.45); color: var(--lime); }
 .btn.on { outline: 2px solid var(--lime); }
 .btn.wide { width: 100%; }
@@ -90,7 +92,7 @@ a.btn.wide { display: flex; }
 .bar { height: 8px; border-radius: 99px; background: #eceff3; overflow: hidden; margin: 0.4rem 0 0.8rem; }
 .bar > span { display: block; height: 100%; background: var(--orange); width: 0; }
 .chip { border: 1px solid var(--line); background: #fff; padding: 0.4rem 0.7rem; border-radius: 999px; }
-.chip.on { border-color: var(--orange); color: var(--orange); }
+.chip.on { border-color: var(--orange-strong); color: var(--orange-strong); }
 .plan { padding: 0.95rem; margin-bottom: 0.7rem; }
 .plan.featured { border-color: var(--orange); box-shadow: 0 0 0 2px rgba(255, 130, 67, 0.25); }
 .plan b { font-size: 1.15rem; }
@@ -105,7 +107,8 @@ a.btn.wide { display: flex; }
 /* Theme picker palette, chosen for study: calm sage for focus, warm paper to cut glare,
    blue for concentration, a small yellow for reward, soft orange cards to invite a tap. */
 /* Soft orange frame around the whole screen (header with the Lingo Pop name included),
-   warm paper inside. Applies to the theme picker and the phrase screen, not billing. */
+   warm paper inside. Applies to every screen, billing and locked included (the class ships in
+   index.html so the first paint is already themed). */
 body.themed { background: #ffe4cc; }
 body.themed .brand { color: #d9531a; }
 body.themed .tag { color: #5a4636; }
@@ -119,6 +122,40 @@ body.themed #view {
 body.themed #open-billing { background: #eef5fc; border-color: #b9d1ec; color: #1d4f8c; font-weight: 700; }
 body.themed .points { background: #fff5d1; border-color: #ecd486; color: #5c4600; }
 body.themed .credit { color: #6a5546; }
+body.themed #view:empty { min-height: 40vh; }
+
+/* Billing (Suscribirme) and locked screens: same peach frame and warm card as the rest. */
+body.on-billing #view .stack { margin-bottom: 0.4rem; }
+#plan-month, #plan-year {
+  min-height: 58px;
+  border-radius: 18px;
+  border: 2px solid #e8a066;
+  background: #fff;
+  color: var(--text);
+  font-weight: 800;
+  font-size: 1.05rem;
+  box-shadow: 0 6px 16px rgba(80, 36, 0, 0.08);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+/* Anual is the recommended plan: warm filled card with a burnt orange border. */
+#plan-year {
+  background: linear-gradient(180deg, #fff1e4 0%, #ffd5ad 100%);
+  border-color: var(--orange-strong);
+  color: #2a1d12;
+  box-shadow: 0 10px 22px rgba(194, 65, 12, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+#plan-month:hover, #plan-year:hover { transform: translateY(-1px); }
+#plan-month:focus-visible, #plan-year:focus-visible { outline: 3px solid #1d4f8c; outline-offset: 2px; }
+/* Selected plan: thick green ring plus green border, visible on both cards. */
+#plan-month.on, #plan-year.on {
+  border-color: var(--lime);
+  outline: 3px solid var(--lime);
+  outline-offset: 2px;
+}
+body.on-billing #view .fine, body.on-billing #view .lead { color: #4a3728; }
+body.on-billing #add-card,
+body.on-locked #add-card { background: var(--orange-strong); border-color: transparent; color: #fff; font-weight: 800; }
+body.on-billing #billing-back { margin-top: 0.6rem; }
 .home {
   background: #dcebe1;
   color: #1f3a2e;
@@ -265,7 +302,7 @@ details.more summary { cursor: pointer; font-weight: 800; }
   padding: 0 0.06rem;
   cursor: pointer;
 }
-.tap-word:hover, .tap-word:focus { background: var(--orange); border-radius: 5px; border-bottom-color: transparent; }
+.tap-word:hover, .tap-word:focus { background: var(--orange-strong); border-radius: 5px; border-bottom-color: transparent; }
 @media (max-width: 860px) {
   .stage { grid-template-columns: 1fr; }
   .script { max-height: none; }
