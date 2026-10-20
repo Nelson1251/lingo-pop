@@ -1294,7 +1294,7 @@
     startTrialIfNeeded();
     var headerSub = $("open-billing");
     if (headerSub) headerSub.addEventListener("click", openBilling);
-    fetch("clips.json?v=19")
+    fetch("clips.json?v=20")
       .then(function (res) {
         if (!res.ok) throw new Error("clips");
         return res.json();
