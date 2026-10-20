@@ -3576,7 +3576,7 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": 6.44,
     "note": "Frase corta de VOA Learning English: History and Nature at Dry Tortugas National Park. Traducción automática (argos), sin revisar. Coincidencia con el audio 1.00. Fuente 3275242-history-and-nature-at-dry-tortugas-natio.mp3 desde 17.7s.",
-    "video": null,
+    "video": "media/phrases/v3275242.mp4",
     "blankWord": "includes"
   },
   {
@@ -3604,7 +3604,7 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": 3.27,
     "note": "Frase corta de VOA Learning English: The Otherworldly Beauty of Badlands National Park. Traducción automática (argos), sin revisar. Coincidencia con el audio 1.00. Fuente 3409880-the-otherworldly-beauty-of-badlands-nati.mp3 desde 20.9s.",
-    "video": null,
+    "video": "media/phrases/v3409880.mp4",
     "blankWord": "mostly"
   },
   {
@@ -4082,7 +4082,7 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": 1.99,
     "note": "Frase corta de VOA Learning English: Talking about What We See in Space. Traducción automática (argos), sin revisar. Coincidencia con el audio 1.00. Fuente 7675540-talking-about-what-we-see-in-space.mp3 desde 4.8s.",
-    "video": null,
+    "video": "media/phrases/v7675540.mp4",
     "blankWord": "planets"
   },
   {
@@ -4222,7 +4222,7 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": 1.54,
     "note": "Frase corta de VOA Learning English: What Is Your Country’s National Dish?. Traducción automática (argos), sin revisar. Coincidencia con el audio 1.00. Fuente 7526178-what-is-your-country-s-national-dish.mp3 desde 5.9s.",
-    "video": null,
+    "video": "media/phrases/v7526178.mp4",
     "blankWord": "dish"
   },
   {
@@ -4432,7 +4432,7 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": 0,
     "note": "Frase corta de VOA Learning English: Grammar and New Year’s Resolutions. Traducción automática (argos), sin revisar. Coincidencia con el audio 1.00. Fuente 7413539-grammar-and-new-year-s-resolutions.mp3 desde 1.7s.",
-    "video": null,
+    "video": "media/phrases/v7413539.mp4",
     "blankWord": "different"
   },
   {
@@ -5837,7 +5837,7 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": 1.18,
     "note": "Frase corta de VOA Learning English: Stonewall Inn Named LGBT National Monument. Traducción automática (argos), sin revisar. Coincidencia con el audio 1.00. Fuente 3391152-stonewall-inn-named-lgbt-national-monume.mp3 desde 25.8s.",
-    "video": null,
+    "video": "media/phrases/v3391152.mp4",
     "blankWord": "cried"
   },
   {
@@ -5851,7 +5851,7 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": 1.92,
     "note": "Frase corta de VOA Learning English: Big Bend National Park: A Texas Treasure. Traducción automática (argos), sin revisar. Coincidencia con el audio 1.00. Fuente 3440694-big-bend-national-park-a-texas-treasure.mp3 desde 23.0s.",
-    "video": null,
+    "video": "media/phrases/v3440694.mp4",
     "blankWord": "landscape"
   },
   {
@@ -6034,7 +6034,7 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": 9.27,
     "note": "Frase corta de VOA Learning English: Are You Hungry for Food Phrasals? Part 1. Traducción automática (argos), sin revisar. Coincidencia con el audio 1.00. Fuente 4408315-are-you-hungry-for-food-phrasals-part-1.mp3 desde 18.3s.",
-    "video": null,
+    "video": "media/phrases/v4408315.mp4",
     "blankWord": "listen"
   },
   {
@@ -6076,7 +6076,7 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": 2.49,
     "note": "Frase corta de VOA Learning English: Compound Nouns: Putting Words Together. Traducción automática (argos), sin revisar. Coincidencia con el audio 1.00. Fuente 4706032-compound-nouns-putting-words-together.mp3 desde 11.7s.",
-    "video": null,
+    "video": "media/phrases/v4706032.mp4",
     "blankWord": "celebration"
   },
   {
@@ -6833,7 +6833,7 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": 0,
     "note": "Frase corta de VOA Learning English: How to Interrupt Someone in a Nice Way. Traducción automática (argos), sin revisar. Coincidencia con el audio 1.00. Fuente 4735900-how-to-interrupt-someone-in-a-nice-way.mp3 desde 0.7s.",
-    "video": null,
+    "video": "media/phrases/v4735900.mp4",
     "blankWord": "overseas"
   },
   {
@@ -8650,7 +8650,7 @@
   {
     "id": "v5313777",
     "en": "A tag question is a short question added to a statement.",
-    "es": "Se trata de una persona que está a su disposición.",
+    "es": "Una pregunta coletilla es una pregunta corta añadida a una afirmación.",
     "category": "general",
     "level": "intermedio",
     "lessonPage": "https://learningenglish.voanews.com/a/titanic-and-english-grammar-/5313777.html",
@@ -8658,13 +8658,13 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": 1.84,
     "note": "Frase corta de VOA Learning English: 'Titanic' and English Grammar. Traducción automática (argos), sin revisar. Coincidencia con el audio 1.00. Fuente 5313777-titanic-and-english-grammar.mp3 desde 46.2s.",
-    "video": null,
+    "video": "media/phrases/v5313777.mp4",
     "blankWord": "statement"
   },
   {
     "id": "v5192719",
-    "en": "There is no grammatical reason why.",
-    "es": "No hay ninguna razón gramática.",
+    "en": "There is no grammatical reason.",
+    "es": "No hay ninguna razón gramatical.",
     "category": "general",
     "level": "intermedio",
     "lessonPage": "https://learningenglish.voanews.com/a/doing-these-things-will-improve-your-collocations/5192719.html",
@@ -8673,7 +8673,7 @@
     "startSeconds": 1.44,
     "endSeconds": 4.16,
     "note": "Frase corta de VOA Learning English: Do These Things to Improve Your Collocations. Traducción automática (argos), sin revisar. Coincidencia con el audio 1.00. Fuente 5192719-do-these-things-to-improve-your-collocat.mp3 desde 63.0s.",
-    "video": null,
+    "video": "media/phrases/v5192719.mp4",
     "blankWord": "grammatical"
   },
   {
@@ -9171,7 +9171,7 @@
   },
   {
     "id": "v5316290",
-    "en": "That is an interesting question.",
+    "en": "That's an interesting question.",
     "es": "Esa es una pregunta interesante.",
     "category": "general",
     "level": "intermedio",
@@ -9180,7 +9180,7 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": 2.31,
     "note": "Frase corta de VOA Learning English: Sport or Sports?. Traducción automática (argos), sin revisar. Coincidencia con el audio 1.00. Fuente 5316290-sport-or-sports.mp3 desde 13.6s.",
-    "video": null,
+    "video": "media/phrases/v5316290.mp4",
     "blankWord": "interesting"
   },
   {
@@ -9503,7 +9503,7 @@
     "license": "VOA Learning English, public domain, credit learningenglish.voanews.com",
     "startSeconds": 1.65,
     "note": "Frase corta de VOA Learning English: 'Once in a Blue Moon'. Traducción automática (argos), sin revisar. Coincidencia con el audio 1.00. Fuente 5639056-once-in-a-blue-moon.mp3 desde 95.5s.",
-    "video": null,
+    "video": "media/phrases/v5639056.mp4",
     "blankWord": "regular"
   },
   {
