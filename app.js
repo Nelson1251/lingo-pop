@@ -1010,6 +1010,11 @@
     return html;
   }
 
+  function photoCredit(clip) {
+    var m = /Foto:\s*([^]*)$/.exec(clip.license || "");
+    if (!m) return "";
+    return "<p class=\"photo-credit\" style=\"margin:4px 0 0;font-size:0.72rem;line-height:1.3;color:#8a8a8a;text-align:right;overflow-wrap:anywhere;\">Foto: " + esc(m[1].trim()) + "</p>";
+  }
   function renderPractice() {
     var list = levelClips();
     if (state.index >= list.length) state.index = 0;
@@ -1043,7 +1048,7 @@
       html += "<div class=\"subs\">";
       html += "<p class=\"sentence\" id=\"en-line\">" + (core ? tapCaption(clip) : esc(clip.spokenEn || clip.en)) + "</p>";
       html += "<p class=\"translation\" id=\"es-line\">" + esc(shownEs) + "</p>";
-      html += "</div></div>" + scrub + transport + "</div>";
+      html += "</div></div>" + photoCredit(clip) + scrub + transport + "</div>";
     } else {
       html += "<div class=\"player\"><div class=\"subs subs-solo\">";
       html += "<p class=\"sentence\" id=\"en-line\">" + (core ? tapCaption(clip) : esc(clip.en)) + "</p>";
@@ -1294,7 +1299,7 @@
     startTrialIfNeeded();
     var headerSub = $("open-billing");
     if (headerSub) headerSub.addEventListener("click", openBilling);
-    fetch("clips.json?v=22")
+    fetch("clips.json?v=23")
       .then(function (res) {
         if (!res.ok) throw new Error("clips");
         return res.json();
