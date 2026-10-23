@@ -316,4 +316,5 @@ details.more summary { cursor: pointer; font-weight: 800; }
   .subs:not(.subs-solo) { position: static; padding: 0.45rem 0.7rem 0.55rem; background: #111; }
   .subs .sentence { font-size: 1rem; line-height: 1.25; margin: 0; }
   .subs .translation { font-size: 0.85rem; line-height: 1.25; margin: 0.15rem 0 0; }
+  .player .clip-window { width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); border-radius: 0; outline: none; box-shadow: none; }
 }
