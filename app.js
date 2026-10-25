@@ -32,7 +32,7 @@
     trabajo: { label: "Trabajo", blurb: "Entrevista, oficina y el noticiero." },
     gramatica: { label: "Gramática", blurb: "Gramática y lenguaje, de VOA Learning English." },
     general: { label: "Frases generales", blurb: "Frases útiles de VOA Learning English." },
-    kids: { label: "Kids", blurb: "Frases de Anna, para niños." }
+    kids: { label: "Primeros pasos", blurb: "Frases sencillas de Anna para empezar." }
   };
   var CATS = {
     all: "Todas",
